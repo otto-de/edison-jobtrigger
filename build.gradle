@@ -1,0 +1,60 @@
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'project-report'
+
+apply from: 'dependencies.gradle'
+
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+    }
+}
+
+archivesBaseName='edison-jobtrigger'
+group = 'de.otto.edison'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    exclude group: "org.slf4j", module: "slf4j-log4j12"
+    exclude group: "log4j", module: "log4j"
+    exclude module: "spring-boot-starter-tomcat"
+}
+
+dependencies {
+    compile libraries.edison
+    compile libraries.logging
+    compile libraries.jetty
+    compile libraries.asyncHttp
+    compile libraries.gson
+
+    testCompile libraries.test
+}
+
+test {
+    // pass -Dspring.profiles.active=local and other system properties to the test task
+    systemProperties = System.properties
+
+    description "Tell gradle to use TestNG with all groups"
+    useTestNG()
+    options {
+        useDefaultListeners = true
+    }
+}
+
+
+

@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+edison-jobtrigger.ipr
+.gradle
+edison-jobtrigger.iws
+edison-jobtrigger.iml
+out
+build
