@@ -1,5 +1,8 @@
-package de.otto.edison.jobtrigger;
+package de.otto.edison.jobtrigger.discovery;
 
+import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.trigger.TriggerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,9 +13,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.time.Duration.ofDays;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The DiscoveryController is responsible to handle the discovery page of the JobTrigger.
@@ -33,6 +39,9 @@ import static java.util.Arrays.asList;
 @Controller
 public class DiscoveryController {
 
+    @Autowired
+    private DiscoveryService discoveryService;
+
     @RequestMapping(value = "/discover", method = RequestMethod.POST)
     public String startDiscovery(final @RequestParam String discoveryUrl,
                                  final HttpServletResponse response) {
@@ -45,6 +54,7 @@ public class DiscoveryController {
             cookie.setMaxAge(-1 * (int) ofDays(365).getSeconds());
             response.addCookie(cookie);
         }
+        discoveryService.rediscoverFrom(discoveryUrl);
         return "redirect:discover";
     }
 
@@ -55,21 +65,21 @@ public class DiscoveryController {
             return new ModelAndView("discover") {{
                 addObject("discoveryUrl", discoveryUrl);
                 addObject("hasDefinitions", true);
-                addObject("definitions", asList(
-                        new LinkedHashMap<String,String>() {{
-                            put("server", "http://example.com/internal/jobs/FullImport");
-                            put("jobType", "Full Import");
-                            put("definition", "Once every hour");
-                        }},
-                        new LinkedHashMap<String,String>() {{
-                            put("server", "http://example.com/internal/jobs/DeltaImport");
-                            put("jobType", "Delta Import");
-                            put("definition", "Once every minute");
-                }}));
+                addObject("definitions", getDefinitions());
             }};
         } else {
             return new ModelAndView("discover");
         }
+    }
+
+    private List<Map<String, String>> getDefinitions() {
+        return discoveryService.dicoveredJobDefinitions()
+                .stream()
+                .map(def-> new LinkedHashMap<String, String>() {{
+                    put("source", def.getDiscoverySource());
+                    put("jobType", def.getJobType());
+                    put("definition", def.getDescription());}})
+                .collect(toList());
     }
 
     private String getDiscoveryUrlFrom(HttpServletRequest request) {
