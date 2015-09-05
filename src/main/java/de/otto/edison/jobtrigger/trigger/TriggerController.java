@@ -53,7 +53,7 @@ public class TriggerController {
     @RequestMapping(value = "/triggers", method = RequestMethod.GET)
     public ModelAndView getTriggers() {
         return new ModelAndView("triggers") {{
-            addObject("hasTriggers", !triggerService.getLastResults().isEmpty());
+            addObject("isStarted", triggerService.isStarted());
             addObject("results", getResults());
         }};
     }

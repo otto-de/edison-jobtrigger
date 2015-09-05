@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static de.otto.edison.jobtrigger.trigger.TriggerRunnables.httpTriggerRunnable;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
@@ -39,22 +40,27 @@ public class TriggerService {
     @Autowired
     private AsyncHttpClient httpClient;
     private final List<TriggerResult> lastResult = new CopyOnWriteArrayList<>();
-
-    @PostConstruct
-    public void postConstruct() {
-        startTriggering();
-    }
+    private AtomicBoolean isStarted = new AtomicBoolean(false);
 
     public void startTriggering() {
+        if (isStarted()) {
+            stopTriggering();
+        }
         final List<JobDefinition> jobDefinitions = discoveryService.dicoveredJobDefinitions();
         scheduler.updateTriggers(jobDefinitions
                 .stream()
                 .map(def -> new JobTrigger(def, triggerFor(def), runnableFor(def)))
                 .collect(toList()));
+        isStarted.set(true);
     }
 
     public void stopTriggering() {
         scheduler.stopAllTriggers();
+        isStarted.set(false);
+    }
+
+    public boolean isStarted() {
+        return isStarted.get();
     }
 
     public List<TriggerResult> getLastResults() {
