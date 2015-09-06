@@ -20,7 +20,7 @@ public class TriggerResult {
     public TriggerResult(String id, int statusCode, String location, JobDefinition jobDefinition) {
         this.id = id;
         this.statusCode = statusCode;
-        this.location = location;
+        this.location = location != null ? location : "n/a";
         this.jobDefinition = jobDefinition;
         this.time = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
