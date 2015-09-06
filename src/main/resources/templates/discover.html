@@ -82,13 +82,13 @@
             <!-- Table -->
             <table class="table">
                 <tr>
-                    <th>Source</th>
-                    <th>Job</th>
-                    <th>Definition</th>
+                    <th>Job Type</th>
+                    <th>Frequency</th>
+                    <th>Description</th>
                 </tr>
                 <tr th:each="def : ${service.definitions}">
-                    <td th:text="${def.source}">-</td>
                     <td th:text="${def.jobType}">-</td>
+                    <td th:text="${def.frequency}">-</td>
                     <td th:text="${def.description}">-</td>
                 </tr>
             </table>
