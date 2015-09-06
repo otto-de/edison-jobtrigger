@@ -66,7 +66,7 @@
     <div class="jumbotron">
 
         <p>
-            Discover job definitions:
+            Discover new job definitions:
         </p>
         <form action="discover" method="post">
 
@@ -80,15 +80,16 @@
                     </div> <!-- /input-group -->
                 </div> <!-- /.col-lg-6 -->
             </div> <!-- /.row -->
-            <p/>
-            <button class="btn btn-lg btn-primary" type="submit">Start Discovery  &raquo;</button>
         </form>
 
     </div>
     <div class="jumbotron" th:if="${hasDefinitions}">
+        <p>
+            Discovered job definitions:
+        </p>
         <div class="panel panel-default">
             <!-- Default panel contents -->
-            <div class="panel-heading">Discovered from <span th:text="${discoveryUrl}" /></div>
+            <div class="panel-heading" th:text="${discoveryUrl}"></div>
             <!-- Table -->
             <table class="table">
                 <tr>
@@ -103,9 +104,6 @@
                 </tr>
             </table>
         </div>
-        <form action="triggers/start" method="post">
-            <button class="btn btn-lg btn-primary" type="submit">Start Triggering  &raquo;</button>
-        </form>
     </div>
 
 </div> <!-- /container -->
