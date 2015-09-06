@@ -41,6 +41,10 @@ public class TriggerResult {
         return statusCode;
     }
 
+    public TriggerStatus getTriggerStatus() {
+        return new TriggerStatus(statusCode);
+    }
+
     public String getTime() {
         return time;
     }

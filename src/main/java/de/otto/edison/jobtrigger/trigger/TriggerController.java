@@ -90,7 +90,7 @@ public class TriggerController {
                     put("time", triggerResult.getTime());
                     put("jobType", triggerResult.getJobDefinition().getJobType());
                     put("success", triggerResult.getStatusCode()<300);
-                    put("status", String.valueOf(triggerResult.getStatusCode()));
+                    put("status", triggerResult.getTriggerStatus().getMessage());
                     put("location", triggerResult.getLocation());
                 }})
                 .collect(toList());
