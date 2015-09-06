@@ -1,13 +1,14 @@
 package de.otto.edison.jobtrigger.discovery;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.Arrays.asList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Guido Steinacker
@@ -16,23 +17,28 @@ import static java.util.Arrays.asList;
 @Service
 public class DiscoveryService {
 
-    private final DiscoveryStrategy strategy;
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryService.class);
+    private static final long TEN_MINUTES = 10 * 60 * 1000L;
+
+    @Autowired
+    private DiscoveryStrategy strategy;
+    private volatile List<JobDefinition> discoveredJobDefinitions = new CopyOnWriteArrayList<>();
 
     public DiscoveryService() {
-        this.strategy = new StaticDiscoveryStrategy(asList(
-                new JobDefinition("Statically configured", "http://localhost:8080/jobtrigger/stubs/job/FullImport", "FullImport", "Once every minute", Optional.<String>empty(), Optional.of(Duration.ofMinutes(1))),
-                new JobDefinition("Statically configured", "http://localhost:8080/jobtrigger/stubs/job/DeltaImport", "DeltaImport", "Once every second", Optional.<String>empty(), Optional.of(Duration.ofSeconds(1)))
-        ));
     }
 
     public DiscoveryService(final DiscoveryStrategy strategy) {
         this.strategy = strategy;
     }
 
-    public void rediscoverFrom(final String discoveryUrl) {
+    @Scheduled(fixedDelay = TEN_MINUTES)
+    public void rediscover() {
+        LOG.info("Starting rediscovery of job definitions...");
+        discoveredJobDefinitions = this.strategy.discover();
+        LOG.info("...done");
     }
 
     public List<JobDefinition> dicoveredJobDefinitions() {
-        return strategy.discover();
+        return discoveredJobDefinitions;
     }
 }

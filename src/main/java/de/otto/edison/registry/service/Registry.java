@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static java.time.Duration.ofMinutes;
-import static java.util.Arrays.asList;
-
 /**
  * @author Guido Steinacker
  * @since 06.09.15
@@ -19,15 +16,7 @@ public class Registry {
 
     private static final Logger LOG = LoggerFactory.getLogger(Registry.class);
 
-    private final List<RegisteredService> services = new CopyOnWriteArrayList<>(asList(
-            new RegisteredService("productreco", "http://example.org/ci/productreco", "ProductReco service", ofMinutes(1), "ci", asList("p13n")),
-            new RegisteredService("productsearch", "http://example.org/ci/productsearch", "ProductSearch service", ofMinutes(1), "ci", asList("p13n", "san")),
-            new RegisteredService("campaign", "http://example.org/ci/campaign", "Campaign service", ofMinutes(1), "ci", asList("p13n")),
-            new RegisteredService("insights", "http://example.org/ci/insights", "Insights service", ofMinutes(5), "ci", asList("tesla")),
-            new RegisteredService("productreco", "http://example.org/develop/productsearch", "ProductReco service", ofMinutes(1), "develop", asList("p13n")),
-            new RegisteredService("productsearch", "http://example.org/develop/productsearch", "ProductSearch service", ofMinutes(1), "develop", asList("p13n", "san")),
-            new RegisteredService("insights", "http://example.org/develop/insights", "ProductSearch service", ofMinutes(10), "develop", asList("tesla"))
-    ));
+    private final List<RegisteredService> services = new CopyOnWriteArrayList<>();
 
     public List<RegisteredService> findServices() {
         services.removeIf(s -> {

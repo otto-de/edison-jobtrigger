@@ -8,20 +8,26 @@ import java.util.Optional;
  * @since 05.09.15
  */
 public class JobDefinition {
-    private final String discoverySource;
+    private final String definitionUrl;
+    private final String env;
+    private final String service;
     private final String triggerUrl;
     private final String jobType;
     private final String description;
     private final Optional<String> cron;
     private Optional<Duration> fixedDelay;
 
-    public JobDefinition(final String discoverySource,
+    public JobDefinition(final String definitionUrl,
+                         final String env,
+                         final String service,
                          final String triggerUrl,
                          final String jobType,
                          final String description,
                          final Optional<String> cron,
                          final Optional<Duration> fixedDelay) {
-        this.discoverySource = discoverySource;
+        this.definitionUrl = definitionUrl;
+        this.env = env;
+        this.service = service;
         this.triggerUrl = triggerUrl;
         this.jobType = jobType;
         this.description = description;
@@ -29,12 +35,20 @@ public class JobDefinition {
         this.fixedDelay = fixedDelay;
     }
 
-    public String getDiscoverySource() {
-        return discoverySource;
+    public String getDefinitionUrl() {
+        return definitionUrl;
     }
 
     public String getJobType() {
         return jobType;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public String getService() {
+        return service;
     }
 
     public String getDescription() {

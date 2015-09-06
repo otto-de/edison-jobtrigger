@@ -64,32 +64,21 @@
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-
         <p>
             Discover new job definitions:
         </p>
         <form action="discover" method="post">
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="input-group">
-                      <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">Go!</button>
-                      </span>
-                        <input type="text" class="form-control" name="discoveryUrl" placeholder="http://..." />
-                    </div> <!-- /input-group -->
-                </div> <!-- /.col-lg-6 -->
-            </div> <!-- /.row -->
+            <button class="btn btn-lg btn-primary" type="submit">Discover &raquo;</button>
         </form>
 
     </div>
-    <div class="jumbotron" th:if="${hasDefinitions}">
+    <div class="jumbotron" th:each="env : ${environments}">
         <p>
-            Discovered job definitions:
+            Services registered in <span th:text="${env.name}" />:
         </p>
-        <div class="panel panel-default">
+        <div class="panel panel-default" th:each="service : ${env.services}">
             <!-- Default panel contents -->
-            <div class="panel-heading" th:text="${discoveryUrl}"></div>
+            <div class="panel-heading">JobDefinitions from <span th:text="${service.name}" /></div>
             <!-- Table -->
             <table class="table">
                 <tr>
@@ -97,10 +86,10 @@
                     <th>Job</th>
                     <th>Definition</th>
                 </tr>
-                <tr th:each="def : ${definitions}">
+                <tr th:each="def : ${service.definitions}">
                     <td th:text="${def.source}">-</td>
                     <td th:text="${def.jobType}">-</td>
-                    <td th:text="${def.definition}">-</td>
+                    <td th:text="${def.description}">-</td>
                 </tr>
             </table>
         </div>

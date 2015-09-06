@@ -113,7 +113,7 @@ GET http://example.com/edison-registry/environments/develop/product-reco
 ```json
 {
     "groups" : ["TeamOne"],
-    "expire" : "60",
+    "expire" : 60,
     "links" : [ {
         "rel" : "http://github.com/otto-de/edison/link-relations/microservice",
         "href" : "http://example.com/myservice",
@@ -139,7 +139,7 @@ PUT http://example.com/edison-registry/environments/develop/product-reco
 ```json
 {
     "groups" : ["TeamOne"],
-    "expire" : "60",
+    "expire" : 60,
     "links" : [ {
         "rel" : "http://github.com/otto-de/edison/link-relations/microservice",
         "href" : "http://example.com/myservice",
