@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Edison JobTrigger - Triggers</title>
+    <title>Edison JobTrigger - Registry</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" />
@@ -37,8 +37,8 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="discover.html">Discover</a></li>
-                <li class="active"><a href="triggers.html">Triggers</a></li>
+                <li class="active"><a href="discover.html">Discover</a></li>
+                <li><a href="triggers.html">Triggers</a></li>
 
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -64,77 +64,46 @@
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
+
         <p>
-            Last Triggered Jobs:
+            Discover new job definitions:
         </p>
-        <div class="panel panel-warning">
-            <div class="panel-heading">Last failed triggers</div>
-            <div class="panel-body">
-            </div>            <!-- Table -->
-            <table class="table">
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Time</th>
-                    <th>JobType</th>
-                    <th>Status</th>
-                    <th>Location</th>
-                </tr>
-                <tr th:each="f : ${failed}">
-                    <td><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
-                    <td th:text="${f.time}">-</td>
-                    <td th:text="${f.jobType}">-</td>
-                    <td th:text="${f.status}">-</td>
-                    <td th:text="${f.location}">-</td>
-                </tr>
-            </table>
-        </div>
-        <div class="panel panel-primary">
-            <div class="panel-heading">Last triggers</div>
-            <div class="panel-body">
-            </div>            <!-- Table -->
-            <table class="table">
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Time</th>
-                    <th>JobType</th>
-                    <th>Status</th>
-                    <th>Location</th>
-                </tr>
-                <tr th:each="result : ${results}">
-                    <td th:if="${result.success}"><span class="glyphicon glyphicon-ok" aria-hidden="true"/></td>
-                    <td th:if="${!result.success}"><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
-                    <td th:text="${result.time}">-</td>
-                    <td th:text="${result.jobType}">-</td>
-                    <td th:text="${result.status}">-</td>
-                    <td th:text="${result.location}">-</td>
-                </tr>
-                <tr>
-                    <td colspan="5">
-                        <nav>
-                            <ul class="pager">
-                                <li class="previous"><a th:href="${prev}" href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>
-                                <li class="next"><a th:href="${next}">Older <span aria-hidden="true">&rarr;</span></a></li>
-                            </ul>
-                        </nav>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <form action="discover" method="post">
 
-
-        <div th:if="${isStarted == true}">
-        <form action="triggers/stop" method="post">
-            <button class="btn btn-lg btn-primary" type="submit">Stop Triggering  &raquo;</button>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Go!</button>
+                      </span>
+                        <input type="text" class="form-control" name="discoveryUrl" placeholder="http://..." />
+                    </div> <!-- /input-group -->
+                </div> <!-- /.col-lg-6 -->
+            </div> <!-- /.row -->
         </form>
-        </div>
-        <div th:if="${isStarted == false}">
-        <form action="triggers/start" method="post">
-            <button class="btn btn-lg btn-primary" type="submit">Start Triggering  &raquo;</button>
-        </form>
-        </div>
 
     </div>
     <div class="jumbotron" th:if="${hasDefinitions}">
+        <p>
+            Discovered job definitions:
+        </p>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading" th:text="${discoveryUrl}"></div>
+            <!-- Table -->
+            <table class="table">
+                <tr>
+                    <th>Source</th>
+                    <th>Job</th>
+                    <th>Definition</th>
+                </tr>
+                <tr th:each="def : ${definitions}">
+                    <td th:text="${def.source}">-</td>
+                    <td th:text="${def.jobType}">-</td>
+                    <td th:text="${def.definition}">-</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
 </div> <!-- /container -->
