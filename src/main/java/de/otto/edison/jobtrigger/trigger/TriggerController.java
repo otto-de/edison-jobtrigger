@@ -7,13 +7,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -35,6 +34,8 @@ import static java.util.stream.Collectors.toList;
 @Controller
 public class TriggerController {
 
+    private static final int PAGE_SIZE = 25;
+
     @Autowired
     private TriggerService triggerService;
 
@@ -51,20 +52,47 @@ public class TriggerController {
     }
 
     @RequestMapping(value = "/triggers", method = RequestMethod.GET)
-    public ModelAndView getTriggers() {
+    public ModelAndView getTriggers(final @RequestParam(required = false) String startFrom) {
+        final List<TriggerResult> triggerResults = triggerService.getLastResults();
+        final int startIndex = indexOf(startFrom, triggerResults);
+        final int endIndex = min(triggerResults.size(), startIndex + PAGE_SIZE);
+        final List<TriggerResult> page = triggerResults.subList(startIndex, endIndex);
+        final List<TriggerResult> failedTriggers = triggerResults.stream().filter(r->r.getStatusCode() > 299).limit(5).collect(toList());
+        final List<Map<String, ?>> results = toView(page);
         return new ModelAndView("triggers") {{
             addObject("isStarted", triggerService.isStarted());
-            addObject("results", getResults());
+            if (startIndex > 0) {
+                addObject("prev", "triggers?startFrom=" + triggerResults.get(max(0, startIndex - PAGE_SIZE)).getId());
+            }
+            if (endIndex < triggerResults.size()) {
+                addObject("next", "triggers?startFrom=" + triggerResults.get(min(endIndex, triggerResults.size())).getId());
+            }
+            addObject("results", results);
+            addObject("failed", toView(failedTriggers));
         }};
     }
 
-    private List<Map<String, String>> getResults() {
-        return triggerService.getLastResults()
-                .stream()
-                .map(def-> new LinkedHashMap<String, String>() {{
-                    put("jobType", def.getJobDefinition().getJobType());
-                    put("status", String.valueOf(def.getStatusCode()));
-                    put("location", def.getLocation());}})
+    private int indexOf(final String startFrom, final List<TriggerResult> results) {
+        if (startFrom != null) {
+            for (int i = 0, n = results.size(); i < n; ++i) {
+                if (results.get(i).getId().equals(startFrom)) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+
+    private List<Map<String, ?>> toView(final List<TriggerResult> results) {
+        return results.stream()
+                .map(triggerResult -> new LinkedHashMap<String, Object>() {{
+                    put("id", triggerResult.getId());
+                    put("time", triggerResult.getTime());
+                    put("jobType", triggerResult.getJobDefinition().getJobType());
+                    put("success", triggerResult.getStatusCode()<300);
+                    put("status", String.valueOf(triggerResult.getStatusCode()));
+                    put("location", triggerResult.getLocation());
+                }})
                 .collect(toList());
     }
 

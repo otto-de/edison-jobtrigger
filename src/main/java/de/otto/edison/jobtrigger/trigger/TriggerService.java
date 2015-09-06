@@ -17,9 +17,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static de.otto.edison.jobtrigger.trigger.TriggerRunnables.httpTriggerRunnable;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
+import static java.lang.String.valueOf;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -41,6 +43,7 @@ public class TriggerService {
     private AsyncHttpClient httpClient;
     private final List<TriggerResult> lastResult = new CopyOnWriteArrayList<>();
     private AtomicBoolean isStarted = new AtomicBoolean(false);
+    private AtomicLong currentIndex = new AtomicLong(0);
 
     public void startTriggering() {
         if (isStarted()) {
@@ -71,7 +74,7 @@ public class TriggerService {
         return httpTriggerRunnable(httpClient, jobDefinition, response -> {
             int statusCode = response.getStatusCode();
             String location = response.getHeader("Location");
-            lastResult.add(0, new TriggerResult(statusCode, location, jobDefinition));
+            lastResult.add(0, new TriggerResult(valueOf(currentIndex.addAndGet(1)), statusCode, location, jobDefinition));
             if (lastResult.size() > 1000) {
                 lastResult.remove(1000);
             }

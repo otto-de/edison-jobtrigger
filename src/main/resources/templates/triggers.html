@@ -67,23 +67,61 @@
         <p>
             Last Triggered Jobs:
         </p>
-        <div class="panel panel-default">
-            <!-- Table -->
+        <div class="panel panel-warning">
+            <div class="panel-heading">Last failed triggers</div>
+            <div class="panel-body">
+            </div>            <!-- Table -->
             <table class="table">
                 <tr>
+                    <th>&nbsp;</th>
+                    <th>Time</th>
+                    <th>JobType</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                </tr>
+                <tr th:each="f : ${failed}">
+                    <td><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
+                    <td th:text="${f.time}">-</td>
+                    <td th:text="${f.jobType}">-</td>
+                    <td th:text="${f.status}">-</td>
+                    <td th:text="${f.location}">-</td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">Last triggers</div>
+            <div class="panel-body">
+            </div>            <!-- Table -->
+            <table class="table">
+                <tr>
+                    <th>&nbsp;</th>
                     <th>Time</th>
                     <th>JobType</th>
                     <th>Status</th>
                     <th>Location</th>
                 </tr>
                 <tr th:each="result : ${results}">
+                    <td th:if="${result.success}"><span class="glyphicon glyphicon-ok" aria-hidden="true"/></td>
+                    <td th:if="${!result.success}"><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
                     <td th:text="${result.time}">-</td>
                     <td th:text="${result.jobType}">-</td>
                     <td th:text="${result.status}">-</td>
                     <td th:text="${result.location}">-</td>
                 </tr>
+                <tr>
+                    <td colspan="4">
+                        <nav>
+                            <ul class="pager">
+                                <li class="previous"><a th:href="${prev}" href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>
+                                <li class="next"><a th:href="${next}">Older <span aria-hidden="true">&rarr;</span></a></li>
+                            </ul>
+                        </nav>
+                    </td>
+                </tr>
             </table>
         </div>
+
+
         <div th:if="${isStarted == true}">
         <form action="triggers/stop" method="post">
             <button class="btn btn-lg btn-primary" type="submit">Stop Triggering  &raquo;</button>
