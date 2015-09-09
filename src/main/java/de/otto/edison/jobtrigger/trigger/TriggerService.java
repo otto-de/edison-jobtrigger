@@ -5,24 +5,25 @@ import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.Date;
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static de.otto.edison.jobtrigger.trigger.TriggerRunnables.httpTriggerRunnable;
+import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromHttpStatus;
+import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromMessage;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
 import static java.lang.String.valueOf;
-import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -34,6 +35,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class TriggerService {
 
     private static final Logger LOG = getLogger(TriggerService.class);
+    public static final int MAX_RESULTS = 1000;
 
     @Autowired
     private DiscoveryService discoveryService;
@@ -41,9 +43,10 @@ public class TriggerService {
     private JobScheduler scheduler;
     @Autowired
     private AsyncHttpClient httpClient;
-    private final List<TriggerResult> lastResult = new CopyOnWriteArrayList<>();
-    private AtomicBoolean isStarted = new AtomicBoolean(false);
-    private AtomicLong currentIndex = new AtomicLong(0);
+
+    private final Deque<TriggerResult> lastResult = new ConcurrentLinkedDeque<>();
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
+    private final AtomicLong currentIndex = new AtomicLong(0);
 
     public void startTriggering() {
         if (isStarted()) {
@@ -67,19 +70,44 @@ public class TriggerService {
     }
 
     public List<TriggerResult> getLastResults() {
-        return unmodifiableList(lastResult);
+        return new ArrayList<>(lastResult);
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
-        return httpTriggerRunnable(httpClient, jobDefinition, response -> {
-            int statusCode = response.getStatusCode();
-            String location = response.getHeader("Location");
-            lastResult.add(0, new TriggerResult(valueOf(currentIndex.addAndGet(1)), statusCode, location, jobDefinition));
-            if (lastResult.size() > 1000) {
-                lastResult.remove(1000);
+        return httpTriggerRunnable(httpClient, jobDefinition, new TriggerResponseConsumer() {
+            @Override
+            public void consume(final Response response) {
+                try {
+                    int statusCode = response.getStatusCode();
+                    String location = response.getHeader("Location");
+                    lastResult.addFirst(new TriggerResult(nextId(), fromHttpStatus(statusCode), ofNullable(location), jobDefinition));
+                    while (lastResult.size() > MAX_RESULTS) {
+                        lastResult.removeLast();
+                    }
+                    LOG.info("Triggered {}: status = {}, location = {}", jobDefinition.getTriggerUrl(), statusCode, location);
+                } catch (final Exception e) {
+                    LOG.error("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), e.getMessage(), e);
+                }
             }
-            LOG.info("Triggered {}: status = {}, location = {}", jobDefinition.getTriggerUrl(), statusCode, location);
+
+            @Override
+            public void consume(final Throwable throwable) {
+                if (throwable instanceof ConnectException) {
+                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage("Connection Refused"), emptyMessage(), jobDefinition));
+                } else {
+                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage(throwable.getMessage()), emptyMessage(), jobDefinition));
+                }
+                LOG.warn("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), throwable.getMessage(), throwable);
+            }
         });
+    }
+
+    private Optional<String> emptyMessage() {
+        return Optional.<String>empty();
+    }
+
+    private String nextId() {
+        return valueOf(currentIndex.addAndGet(1));
     }
 
     private Trigger triggerFor(final JobDefinition jobDefinition) {

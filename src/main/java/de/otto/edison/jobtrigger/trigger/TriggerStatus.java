@@ -1,45 +1,65 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.*;
 
 /**
  * @author Guido Steinacker
  * @since 06.09.15
  */
 public class TriggerStatus {
-    public static final String TRIGGERED = "triggered";
-    public static final String BLOCKED = "blocked";
-    public static final String NOT_FOUND = "not found";
-    public static final String FAILED = "failed with http ";
+
+    public enum State {
+        OK,
+        FAILED,
+        BLOCKED
+    }
+    private static final String TRIGGERED = "triggered";
+    private static final String BLOCKED = "blocked";
+    private static final String NOT_FOUND = "not found";
+    private static final String FAILED = "failed with http ";
 
     private final String message;
-    private final int statusCode;
+    private final State state;
 
-    public TriggerStatus(final int statusCode) {
-        this.statusCode = statusCode;
-        switch (statusCode) {
-            case HttpServletResponse.SC_OK:
-            case HttpServletResponse.SC_CREATED:
-            case HttpServletResponse.SC_ACCEPTED:
-            case HttpServletResponse.SC_NO_CONTENT:
-                this.message = TRIGGERED;
-                break;
-            case HttpServletResponse.SC_CONFLICT:
-                this.message = BLOCKED;
-                break;
-            case HttpServletResponse.SC_NOT_FOUND:
-                this.message = NOT_FOUND;
-                break;
-            default:
-                this.message = FAILED + statusCode;
-        }
+    private TriggerStatus(final State state, final String message) {
+        this.state = state;
+        this.message = message;
     }
 
+    public static TriggerStatus fromHttpStatus(final int statusCode) {
+        final String message;
+        final State state;
+        switch (statusCode) {
+            case SC_OK:
+            case SC_CREATED:
+            case SC_ACCEPTED:
+            case SC_NO_CONTENT:
+                message = TRIGGERED;
+                state = State.OK;
+                break;
+            case SC_CONFLICT:
+                message = BLOCKED;
+                state = State.BLOCKED;
+                break;
+            case SC_NOT_FOUND:
+                message = NOT_FOUND;
+                state = State.FAILED;
+                break;
+            default:
+                message = FAILED + statusCode;
+                state = State.FAILED;
+        }
+        return new TriggerStatus(state, message);
+    }
+
+    public static TriggerStatus fromMessage(final String message) {
+        return new TriggerStatus(State.FAILED, message);
+    }
     public String getMessage() {
         return message;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public State getState() {
+        return state;
     }
 }

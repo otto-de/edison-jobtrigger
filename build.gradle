@@ -37,6 +37,7 @@ configurations.all {
 
 dependencies {
     compile libraries.edison
+    compile libraries.bootstrap
     compile libraries.logging
     compile libraries.jetty
     compile libraries.asyncHttp

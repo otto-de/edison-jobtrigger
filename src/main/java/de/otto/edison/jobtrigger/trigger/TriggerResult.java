@@ -2,27 +2,34 @@ package de.otto.edison.jobtrigger.trigger;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofLocalizedDateTime;
+import static java.time.format.FormatStyle.MEDIUM;
 
 /**
+ * Information about a triggered job.
+ *
  * @author Guido Steinacker
  * @since 05.09.15
  */
 public class TriggerResult {
     private final String id;
-    private final int statusCode;
-    private final String location;
+    private final TriggerStatus status;
+    private final Optional<String> location;
     private final JobDefinition jobDefinition;
     private final String time;
 
-    public TriggerResult(String id, int statusCode, String location, JobDefinition jobDefinition) {
+    public TriggerResult(final String id,
+                         final TriggerStatus status,
+                         final Optional<String> location,
+                         final JobDefinition jobDefinition) {
         this.id = id;
-        this.statusCode = statusCode;
-        this.location = location != null ? location : "n/a";
+        this.status = status;
+        this.location = location;
         this.jobDefinition = jobDefinition;
-        this.time = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+        this.time = now().format(ofLocalizedDateTime(MEDIUM));
     }
 
     public String getId() {
@@ -33,16 +40,16 @@ public class TriggerResult {
         return jobDefinition;
     }
 
-    public String getLocation() {
+    public Optional<String> getLocation() {
         return location;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public TriggerStatus getTriggerStatus() {
+        return status;
     }
 
-    public TriggerStatus getTriggerStatus() {
-        return new TriggerStatus(statusCode);
+    public boolean failed() {
+        return status.getState() == TriggerStatus.State.FAILED;
     }
 
     public String getTime() {

@@ -10,4 +10,6 @@ interface TriggerResponseConsumer {
 
     public void consume(final Response response);
 
+    public void consume(final Throwable throwable);
+
 }

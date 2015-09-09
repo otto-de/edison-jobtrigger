@@ -8,7 +8,7 @@
     <title>Edison JobTrigger - Triggers</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 
     <style>
         body { padding-top: 70px; }
@@ -39,22 +39,9 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="discover.html">Discover</a></li>
                 <li class="active"><a href="triggers.html">Triggers</a></li>
-
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
-                    </ul>
-                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="internal/index.html">Admin</a></li>
+                <li><a href="internal">Admin</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -62,16 +49,29 @@
 
 <div class="container">
 
-    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+
+        <div th:if="${isStarted == true}">
+            <form action="triggers/stop" method="post">
+                <button class="btn btn-lg btn-primary" type="submit">Stop Triggering  &raquo;</button>
+            </form>
+        </div>
+        <div th:if="${isStarted == false}">
+            <form action="triggers/start" method="post">
+                <button class="btn btn-lg btn-primary" type="submit">Start Triggering  &raquo;</button>
+            </form>
+        </div>
+    </div>
     <div class="jumbotron">
         <p>
             Last Triggered Jobs:
         </p>
-        <div class="panel panel-warning">
+        <div class="panel panel-danger" th:if="!${#lists.isEmpty(failed)}">
             <div class="panel-heading">Last failed triggers</div>
             <div class="panel-body">
             </div>            <!-- Table -->
-            <table class="table">
+            <div class="table-responsive">
+            <table class="table table-hover table-condensed">
                 <tr>
                     <th>&nbsp;</th>
                     <th>Time</th>
@@ -80,33 +80,36 @@
                     <th>Location</th>
                 </tr>
                 <tr th:each="f : ${failed}">
-                    <td><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
+                    <td><span class="label label-danger"><span class="glyphicon glyphicon-fire" aria-hidden="true"/></span></td>
                     <td th:text="${f.time}">-</td>
-                    <td th:text="${f.jobType}">-</td>
-                    <td th:text="${f.status}">-</td>
-                    <td th:text="${f.location}">-</td>
+                    <td th:text="${f.job}">-</td>
+                    <td th:text="${f.message}">-</td>
+                    <td><a th:href="${result.location}">Show Messages</a></td>
                 </tr>
             </table>
+            </div>
         </div>
         <div class="panel panel-primary">
             <div class="panel-heading">Last triggers</div>
             <div class="panel-body">
-            </div>            <!-- Table -->
-            <table class="table">
+            </div>            <!-- Responsice Table -->
+            <div class="table-responsive">
+            <table class="table table-hover table-condensed">
                 <tr>
                     <th>&nbsp;</th>
                     <th>Time</th>
                     <th>JobType</th>
-                    <th>Status</th>
+                    <th>Message</th>
                     <th>Location</th>
                 </tr>
                 <tr th:each="result : ${results}">
-                    <td th:if="${result.success}"><span class="glyphicon glyphicon-ok" aria-hidden="true"/></td>
-                    <td th:if="${!result.success}"><span class="glyphicon glyphicon-remove" aria-hidden="true"/></td>
+                    <td th:if="${result.state == 'OK'}"><span class="label label-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"/></span></td>
+                    <td th:if="${result.state == 'FAILED'}"><span class="label label-danger"><span class="glyphicon glyphicon-fire" aria-hidden="true"/></span></td>
+                    <td th:if="${result.state == 'BLOCKED'}"><span class="label label-info"><span class="glyphicon glyphicon-minus" aria-hidden="true"/></span></td>
                     <td th:text="${result.time}">-</td>
-                    <td th:text="${result.jobType}">-</td>
-                    <td th:text="${result.status}">-</td>
-                    <td th:text="${result.location}">-</td>
+                    <td th:text="${result.job}">-</td>
+                    <td th:text="${result.message}">-</td>
+                    <td><a th:href="${result.location}" data-toggle="modal" data-target="#modalMessages">Show Messages</a></td>
                 </tr>
                 <tr>
                     <td colspan="5">
@@ -119,29 +122,38 @@
                     </td>
                 </tr>
             </table>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalMessages" tabindex="-1" role="dialog" aria-labelledby="Job Messages" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Messages</h4>
+
+                        </div>
+                        <div class="modal-body"><div class="te"></div></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+
         </div>
 
 
-        <div th:if="${isStarted == true}">
-        <form action="triggers/stop" method="post">
-            <button class="btn btn-lg btn-primary" type="submit">Stop Triggering  &raquo;</button>
-        </form>
-        </div>
-        <div th:if="${isStarted == false}">
-        <form action="triggers/start" method="post">
-            <button class="btn btn-lg btn-primary" type="submit">Start Triggering  &raquo;</button>
-        </form>
-        </div>
-
-    </div>
-    <div class="jumbotron" th:if="${hasDefinitions}">
     </div>
 
 </div> <!-- /container -->
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="webjars/jquery/1.11.1/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.min.js"></script>
+<script src="webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>
 </html>

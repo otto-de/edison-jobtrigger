@@ -33,6 +33,11 @@ class TriggerRunnables {
                         consumer.consume(response);
                         return response;
                     }
+
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        consumer.consume(t);
+                    }
                 });
 
             } catch (final IOException e) {

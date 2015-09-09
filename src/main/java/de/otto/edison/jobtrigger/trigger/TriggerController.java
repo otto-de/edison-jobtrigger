@@ -1,5 +1,6 @@
 package de.otto.edison.jobtrigger.trigger;
 
+import de.otto.edison.jobtrigger.definition.JobDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,13 +54,12 @@ public class TriggerController {
     }
 
     @RequestMapping(value = "/triggers", method = RequestMethod.GET)
-    public ModelAndView getTriggers(final @RequestParam(required = false) String startFrom) {
+    public ModelAndView getTriggers(final @RequestParam(required = false) String startFrom,
+                                    final HttpServletResponse response) {
         final List<TriggerResult> triggerResults = triggerService.getLastResults();
-        final int startIndex = indexOf(startFrom, triggerResults);
-        final int endIndex = min(triggerResults.size(), startIndex + PAGE_SIZE);
-        final List<TriggerResult> page = triggerResults.subList(startIndex, endIndex);
-        final List<TriggerResult> failedTriggers = triggerResults.stream().filter(r->r.getStatusCode() > 299).limit(5).collect(toList());
-        final List<Map<String, ?>> results = toView(page);
+        final int startIndex = startIndexOf(startFrom, triggerResults);
+        final int endIndex = endIndexOf(triggerResults, startIndex);
+
         return new ModelAndView("triggers") {{
             addObject("isStarted", triggerService.isStarted());
             if (startIndex > 0) {
@@ -67,12 +68,20 @@ public class TriggerController {
             if (endIndex < triggerResults.size()) {
                 addObject("next", "triggers?startFrom=" + triggerResults.get(min(endIndex, triggerResults.size())).getId());
             }
-            addObject("results", results);
-            addObject("failed", toView(failedTriggers));
+            addObject("results", toView(triggerResults.subList(startIndex, endIndex)));
+            addObject("failed", toView(lastFiveFailedOfLastFifty(triggerResults)));
         }};
     }
 
-    private int indexOf(final String startFrom, final List<TriggerResult> results) {
+    private int endIndexOf(List<TriggerResult> triggerResults, int startIndex) {
+        return min(triggerResults.size(), startIndex + PAGE_SIZE);
+    }
+
+    private List<TriggerResult> lastFiveFailedOfLastFifty(final List<TriggerResult> triggerResults) {
+        return triggerResults.stream().limit(50).filter(TriggerResult::failed).limit(5).collect(toList());
+    }
+
+    private int startIndexOf(final String startFrom, final List<TriggerResult> results) {
         if (startFrom != null) {
             for (int i = 0, n = results.size(); i < n; ++i) {
                 if (results.get(i).getId().equals(startFrom)) {
@@ -86,12 +95,13 @@ public class TriggerController {
     private List<Map<String, ?>> toView(final List<TriggerResult> results) {
         return results.stream()
                 .map(triggerResult -> new LinkedHashMap<String, Object>() {{
+                    final JobDefinition jobDefinition = triggerResult.getJobDefinition();
                     put("id", triggerResult.getId());
                     put("time", triggerResult.getTime());
-                    put("jobType", triggerResult.getJobDefinition().getJobType());
-                    put("success", triggerResult.getStatusCode()<300);
-                    put("status", triggerResult.getTriggerStatus().getMessage());
-                    put("location", triggerResult.getLocation());
+                    put("job", jobDefinition.getEnv() + "/" + jobDefinition.getService() + "/" + jobDefinition.getJobType());
+                    put("state", triggerResult.getTriggerStatus().getState().name());
+                    put("message", triggerResult.getTriggerStatus().getMessage());
+                    put("location", triggerResult.getLocation().orElse("#"));
                 }})
                 .collect(toList());
     }
