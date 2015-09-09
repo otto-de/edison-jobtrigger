@@ -1,4 +1,4 @@
-ext.edisonrelease = "0.30.0"
+ext.edisonrelease = "0.31.0"
 ext.libraries = [
         edison     : [
                 "de.otto.edison:health:"+edisonrelease,

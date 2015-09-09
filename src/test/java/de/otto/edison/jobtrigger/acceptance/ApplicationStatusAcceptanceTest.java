@@ -6,13 +6,7 @@ import java.io.IOException;
 
 import static de.otto.edison.jobtrigger.testsupport.applicationdriver.HealthApi.*;
 import static de.otto.edison.jobtrigger.testsupport.dsl.Given.given;
-import static de.otto.edison.jobtrigger.testsupport.dsl.Then.and;
-import static de.otto.edison.jobtrigger.testsupport.dsl.Then.assertThat;
-import static de.otto.edison.jobtrigger.testsupport.dsl.Then.then;
-import static de.otto.edison.jobtrigger.testsupport.dsl.When.when;
-import static de.otto.edison.jobtrigger.testsupport.applicationdriver.HealthApi.*;
-import static de.otto.edison.jobtrigger.testsupport.dsl.Given.given;
-import static de.otto.edison.jobtrigger.testsupport.dsl.Then.then;
+import static de.otto.edison.jobtrigger.testsupport.dsl.Then.*;
 import static de.otto.edison.jobtrigger.testsupport.dsl.When.when;
 import static org.hamcrest.Matchers.*;
 
@@ -62,7 +56,7 @@ public class ApplicationStatusAcceptanceTest {
         then(
                 assertThat(the_status_code().value(), is(200)),
                 and(
-                        assertThat(the_returned_content(), startsWith("<html"))
+                        assertThat(the_returned_content(), startsWith("<!DOCTYPE html>"))
                 )
         );
     }
