@@ -8,8 +8,6 @@ import de.otto.edison.jobtrigger.definition.JobDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 /**
  * @author Guido Steinacker
  * @since 05.09.15
@@ -40,8 +38,8 @@ class TriggerRunnables {
                     }
                 });
 
-            } catch (final IOException e) {
-                LOG.error("IOException caught when trying to trigger '{}': {}", triggerUrl, e.getMessage());
+            } catch (final Exception e) {
+                LOG.error("Exception caught when trying to trigger '{}': {}", triggerUrl, e.getMessage());
             }
         };
     }

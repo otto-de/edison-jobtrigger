@@ -77,14 +77,12 @@
                     <th>Time</th>
                     <th>JobType</th>
                     <th>Status</th>
-                    <th>Location</th>
                 </tr>
                 <tr th:each="f : ${failed}">
                     <td><span class="label label-danger"><span class="glyphicon glyphicon-fire" aria-hidden="true"/></span></td>
                     <td th:text="${f.time}">-</td>
                     <td th:text="${f.job}">-</td>
                     <td th:text="${f.message}">-</td>
-                    <td><a th:href="${result.location}">Show Messages</a></td>
                 </tr>
             </table>
             </div>
@@ -100,7 +98,7 @@
                     <th>Time</th>
                     <th>JobType</th>
                     <th>Message</th>
-                    <th>Location</th>
+                    <th>Details</th>
                 </tr>
                 <tr th:each="result : ${results}">
                     <td th:if="${result.state == 'OK'}"><span class="label label-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"/></span></td>
@@ -109,7 +107,12 @@
                     <td th:text="${result.time}">-</td>
                     <td th:text="${result.job}">-</td>
                     <td th:text="${result.message}">-</td>
-                    <td><a th:href="${result.location}" data-toggle="modal" data-target="#modalMessages">Show Messages</a></td>
+                    <td>
+                        <button type="button" class="btn btn-xs btn-primary"
+                                th:attr="data-job-url=${result.location}"
+                                data-toggle="modal"
+                                data-target="#modalMessages">Show Messages &raquo;</button>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="5">
@@ -125,7 +128,7 @@
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="modalMessages" tabindex="-1" role="dialog" aria-labelledby="Job Messages" aria-hidden="true">
+            <div class="modal" id="modalMessages" tabindex="-1" role="dialog" aria-labelledby="Job Messages" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -133,7 +136,9 @@
                             <h4 class="modal-title">Messages</h4>
 
                         </div>
-                        <div class="modal-body"><div class="te"></div></div>
+                        <div class="modal-body">
+                            <div class="job-messages"></div>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
@@ -155,5 +160,17 @@
 <script src="webjars/jquery/1.11.1/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script>
+    $('#modalMessages').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        debugger
+        var jobMessagesUrl = button.data('job-url');
+        if (jobMessagesUrl === '#') {
+            $('.job-messages').html('<div class="alert alert-info" role="alert">Job not triggered.</div>');
+        } else {
+            $('.job-messages').load(jobMessagesUrl + ' #job-messages');
+        }
+    })
+</script>
 </body>
 </html>

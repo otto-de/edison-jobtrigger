@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,7 +27,7 @@ public class Registry {
             }
             return expired;
         });
-        return services;
+        return new ArrayList<>(services);
     }
 
     public void deleteService(final String env,

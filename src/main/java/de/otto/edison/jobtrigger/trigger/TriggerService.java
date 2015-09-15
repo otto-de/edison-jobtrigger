@@ -3,12 +3,14 @@ package de.otto.edison.jobtrigger.trigger;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -32,7 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @since 05.09.15
  */
 @Service
-public class TriggerService {
+public class TriggerService implements DiscoveryListener {
 
     private static final Logger LOG = getLogger(TriggerService.class);
     public static final int MAX_RESULTS = 1000;
@@ -48,11 +50,16 @@ public class TriggerService {
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
     private final AtomicLong currentIndex = new AtomicLong(0);
 
+    @PostConstruct
+    public void postConstruct() {
+        discoveryService.register(this);
+    }
+
     public void startTriggering() {
         if (isStarted()) {
             stopTriggering();
         }
-        final List<JobDefinition> jobDefinitions = discoveryService.dicoveredJobDefinitions();
+        final List<JobDefinition> jobDefinitions = discoveryService.allJobDefinitions();
         scheduler.updateTriggers(jobDefinitions
                 .stream()
                 .map(def -> new JobTrigger(def, triggerFor(def), runnableFor(def)))
@@ -63,6 +70,11 @@ public class TriggerService {
     public void stopTriggering() {
         scheduler.stopAllTriggers();
         isStarted.set(false);
+    }
+
+    @Override
+    public void updatedJobDefinitions() {
+        startTriggering();
     }
 
     public boolean isStarted() {

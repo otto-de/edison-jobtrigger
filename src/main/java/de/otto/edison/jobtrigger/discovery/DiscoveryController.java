@@ -48,7 +48,7 @@ public class DiscoveryController {
 
     @RequestMapping(value = "/discover", method = RequestMethod.GET)
     public ModelAndView discover(final HttpServletRequest request) {
-        final List<JobDefinition> jobDefinitions = discoveryService.dicoveredJobDefinitions();
+        final List<JobDefinition> jobDefinitions = discoveryService.allJobDefinitions();
         final List<String> environments = jobDefinitions.stream().map(JobDefinition::getEnv).distinct().sorted().collect(toList());
 
         if (!environments.isEmpty()) {
