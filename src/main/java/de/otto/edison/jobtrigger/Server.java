@@ -1,11 +1,9 @@
 package de.otto.edison.jobtrigger;
 
-import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /*
 Extend the basePackages to de.otto.edison so SpringBoot is able to find
