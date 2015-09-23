@@ -62,6 +62,7 @@ public class TriggerService implements DiscoveryListener {
         final List<JobDefinition> jobDefinitions = discoveryService.allJobDefinitions();
         scheduler.updateTriggers(jobDefinitions
                 .stream()
+                .filter(jobDefinition -> jobDefinition.getFixedDelay().isPresent() || jobDefinition.getCron().isPresent())
                 .map(def -> new JobTrigger(def, triggerFor(def), runnableFor(def)))
                 .collect(toList()));
         isStarted.set(true);
