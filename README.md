@@ -43,7 +43,7 @@ of your services and start the triggers accordingly.
 
 # Discovery
 
-Because JobTrigger is has no persistency, Services have to re-register every few minutes: this is the purpose
+Because JobTrigger has no persistency, Services have to re-register every few minutes: this is the purpose
 of property edison.servicediscovery.expire-after.
 
 The known services and their JobDefinitions can be seen on the Discovery page:
