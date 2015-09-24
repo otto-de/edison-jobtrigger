@@ -41,10 +41,26 @@ edison.servicediscovery.service=http://localhost:${server.port}/${server.context
 Run JobTrigger + your service(s). After some time (one minute), JobTrigger will find the JobDefinitions 
 of your services and start the triggers accordingly.
 
+# Discovery
+
 Because JobTrigger is has no persistency, Services have to re-register every few minutes: this is the purpose
 of property edison.servicediscovery.expire-after.
 
+The known services and their JobDefinitions can be seen on the Discovery page:
+![Discovery](src/doc/discovery.png)
+
+# Triggers
+
 Because services can be deployed at any time, the JobTrigger will load current JobDefinitions every few minutes.
 The interval is configured using edison.servicediscovery.refresh-after.
+
+After a while, you can see the triggered jobs on the Trigger page:
+![Triggers](src/doc/jobtriggers.png)
+
+# Job Information
+
+You can access the asynchronously running job by opening the messages: 
+![Job Messages](src/doc/jobmessages.png)
+
 
 Have fun!
