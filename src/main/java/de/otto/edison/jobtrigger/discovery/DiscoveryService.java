@@ -60,7 +60,7 @@ public class DiscoveryService {
         LOG.info("Starting rediscovery of job definitions...");
         final ImmutableList<JobDefinition> discoveryResult = discover();
         if (discoveryResult.size() != jobDefinitions.size() || !discoveryResult.containsAll(jobDefinitions)) {
-            LOG.info("Discovered changes in job definitions.");
+            LOG.info("Discovered changes in job definitions. Old: " + jobDefinitions + " New: " + discoveryResult);
             jobDefinitions = discoveryResult;
             listener.updatedJobDefinitions();
         } else {
@@ -150,7 +150,10 @@ public class DiscoveryService {
                     def.getType(),
                     def.getName(),
                     ofNullable(def.getCron()),
-                    ofNullable(def.getFixedDelay() != null ? ofSeconds(def.getFixedDelay()) : null));
+                    ofNullable(def.getFixedDelay() != null ? ofSeconds(def.getFixedDelay()) : null),
+                    def.getRetries(),
+                    ofNullable(def.getRetryDelay() != null ? ofSeconds(def.getRetryDelay()) : null)
+            );
         } else {
             LOG.warn("No link to job trigger found: " + def);
             return null;
