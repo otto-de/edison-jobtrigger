@@ -22,7 +22,10 @@ That's it.
 
 # Usage
 
-Deploy a JobTrigger somewhere in your environment.
+```
+go build
+java -jar build/libs/edison-jobtrigger-1.0.0.jar
+```
 
 Write an Edison Microservice (or simply use [Example-Jobs](https://github.com/otto-de/edison-microservice/example-jobs) 
 as an example) including some jobs and job definitions. 
