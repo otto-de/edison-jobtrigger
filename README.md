@@ -23,7 +23,7 @@ That's it.
 # Usage
 
 ```
-go build
+gradlew build
 java -jar build/libs/edison-jobtrigger-1.0.0.jar
 ```
 
