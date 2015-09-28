@@ -4,12 +4,14 @@ b=`tput bold`
 nb=`tput sgr0`
 SCRIPT_DIR=$(dirname $0)
 
+export JAVA_OPTS="-Xms64m -Xmx256m -XX:+UseG1GC"
+
 function echob {
     echo "${b}${1}${nb}"
 }
 
 function ensure_requirements {
-    command -v gradlew >/dev/null 2>&1 || { echob "ERROR: gradlew not in PATH. Aborting."; exit 1; }
+    command -v ${SCRIPT_DIR}/gradlew >/dev/null 2>&1 || { echob "ERROR: gradlew not in PATH. Aborting."; exit 1; }
 }
 
 function release {
@@ -38,7 +40,7 @@ if [ "$1" == "help" ]; then
 elif [ "$1" == "release" ]; then
     release
 else
-    gradlew $*
+    ${SCRIPT_DIR}/gradlew $*
 fi
 
 

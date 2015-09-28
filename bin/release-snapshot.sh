@@ -3,6 +3,7 @@
 set -e
 
 USER_GRADLE_PROPERTIES=~/.gradle/gradle.properties
+SCRIPT_DIR=$(dirname $0)
 
 check_configured() {
     grep -q $1 ${USER_GRADLE_PROPERTIES} || echo "$1 not configured in ${USER_GRADLE_PROPERTIES}. $2"
@@ -23,4 +24,4 @@ check_configuration() {
 
 check_configuration
 
-gradlew uploadArchives
+${SCRIPT_DIR}/gradlew uploadArchives
