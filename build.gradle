@@ -58,5 +58,42 @@ test {
     }
 }
 
+tasks.processResources << {
+    def resourcesDir = project.sourceSets.main.output.resourcesDir
+    resourcesDir.mkdirs()
+
+    def versionProperties = new File(resourcesDir, "version.properties")
+    if (versionProperties) {
+        def gitVersion = runCommand("git log -n 1 --format=format:%H")
+        def fullVersion = fullyQualifiedVersion()
+        versionProperties.text = "\ninfo.build.commit = ${gitVersion}" + "\ninfo.build.version = ${fullVersion}"
+    }
+}
+
+def String fullyQualifiedVersion() {
+    def env = System.getenv()
+    def versionFromEnv = env.VERSION
+    def version
+    if (versionFromEnv) {
+        version = versionFromEnv
+    } else {
+        version = '0.1-localbuild'
+    }
+    return version
+}
+
+def String runCommand(def command) {
+    Process proc = command.execute()
+    def out = new StringBuffer()
+    proc.consumeProcessOutputStream(out)
+    proc.consumeProcessErrorStream(out)
+    proc.waitFor()
+    def errorlevel = proc.exitValue()
+    if (errorlevel != 0) {
+        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
+    }
+    out.toString().trim()
+}
+
 
 
