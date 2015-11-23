@@ -61,12 +61,20 @@ public class DiscoveryService {
         final ImmutableList<JobDefinition> discoveryResult = discover();
         if (discoveryResult.size() != jobDefinitions.size() || !discoveryResult.containsAll(jobDefinitions)) {
             LOG.info("Discovered changes in job definitions. Old: " + jobDefinitions + " New: " + discoveryResult);
+            logMemory();
             jobDefinitions = discoveryResult;
             listener.updatedJobDefinitions();
+            logMemory();
         } else {
             LOG.info("No changes in job definitions");
         }
         LOG.info("...done");
+    }
+
+    private void logMemory() {
+        Runtime rt = Runtime.getRuntime();
+        long usedMB = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
+        LOG.info("memory usage" + usedMB);
     }
 
     public List<JobDefinition> allJobDefinitions() {
