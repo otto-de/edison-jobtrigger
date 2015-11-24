@@ -11,10 +11,12 @@ import de.otto.edison.registry.service.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.NumberFormat;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -58,23 +60,24 @@ public class DiscoveryService {
 
     public void rediscover() {
         LOG.info("Starting rediscovery of job definitions...");
+        logMemory("1");
         final ImmutableList<JobDefinition> discoveryResult = discover();
+        logMemory("2");
         if (discoveryResult.size() != jobDefinitions.size() || !discoveryResult.containsAll(jobDefinitions)) {
             LOG.info("Discovered changes in job definitions. Old: " + jobDefinitions + " New: " + discoveryResult);
-            logMemory();
             jobDefinitions = discoveryResult;
             listener.updatedJobDefinitions();
-            logMemory();
         } else {
             LOG.info("No changes in job definitions");
         }
+        logMemory("3");
         LOG.info("...done");
     }
 
-    private void logMemory() {
+    private void logMemory(String position) {
         Runtime rt = Runtime.getRuntime();
-        long usedMB = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
-        LOG.info("memory usage" + usedMB);
+        long usedBytes = (rt.totalMemory() - rt.freeMemory()) / 1024 ;
+        LOG.info("memory usage at position " + position + " " + new DecimalFormat("#,###").format(usedBytes)+ " Bytes");
     }
 
     public List<JobDefinition> allJobDefinitions() {
