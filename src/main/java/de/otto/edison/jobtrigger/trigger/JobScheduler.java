@@ -18,8 +18,6 @@ import java.util.List;
 @Service
 public class JobScheduler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JobScheduler.class);
-
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
 

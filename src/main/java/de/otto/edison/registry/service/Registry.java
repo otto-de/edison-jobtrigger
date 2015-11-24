@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -17,7 +18,7 @@ public class Registry {
 
     private static final Logger LOG = LoggerFactory.getLogger(Registry.class);
 
-    private final List<RegisteredService> services = new CopyOnWriteArrayList<>();
+    private final List<RegisteredService> services = Collections.synchronizedList(new ArrayList<>());
 
     public List<RegisteredService> findServices() {
         services.removeIf(s -> {

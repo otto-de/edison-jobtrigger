@@ -37,8 +37,6 @@ public class DiscoveryController {
 
     @Autowired
     private DiscoveryService discoveryService;
-    @Autowired
-    private Registry registry;
 
     @RequestMapping(value = "/discover", method = RequestMethod.POST)
     public String startDiscovery() {
