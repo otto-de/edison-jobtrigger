@@ -6,6 +6,8 @@ apply plugin: 'project-report'
 
 apply from: 'dependencies.gradle'
 
+defaultTasks 'clean', 'check'
+
 buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
