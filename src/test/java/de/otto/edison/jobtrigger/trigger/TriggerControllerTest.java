@@ -1,18 +1,28 @@
 package de.otto.edison.jobtrigger.trigger;
 
+import de.otto.edison.jobtrigger.definition.JobDefinition;
+import org.hamcrest.Matchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.ViewResolver;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Test
 public class TriggerControllerTest {
@@ -29,7 +39,8 @@ public class TriggerControllerTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setViewResolvers(viewResolver()).build();
     }
 
     @Test
@@ -49,4 +60,112 @@ public class TriggerControllerTest {
 
         verify(triggerService).stopTriggering();
     }
+
+    @Test
+    public void shouldLimitNumberOfTriggersIfMoreAreAvailable() throws Exception {
+        List<TriggerResult> triggers = createEmptyTriggerResults(40);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers")
+                        .param("startFrom", "unknownId"))
+                .andExpect(model()
+                        .attribute("results", Matchers.hasSize(TriggerController.PAGE_SIZE)));
+    }
+
+    @Test
+    public void shouldReturnExactNumberOfTriggersIfLessThanPageSize() throws Exception {
+        int numberOfTriggers = 12;
+        List<TriggerResult> triggers = createEmptyTriggerResults(numberOfTriggers);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers"))
+                .andExpect(model()
+                        .attribute("results", Matchers.hasSize(numberOfTriggers)));
+    }
+
+    @Test
+    public void shouldStartWithGivenIdIfStartFromIdIsGiven() throws Exception {
+        int numberOfTriggers = 30;
+        String startId = "5";
+
+        List<TriggerResult> triggers = createEmptyTriggerResults(numberOfTriggers);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers")
+                        .param("startFrom", startId))
+                .andExpect(model()
+                        .attribute("results", Matchers.hasSize(TriggerController.PAGE_SIZE)));
+    }
+
+    @Test
+    public void shouldHaveNoNextLinkIfNoMoreResultsAvailable() throws Exception {
+        List<TriggerResult> triggers = createEmptyTriggerResults(10);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers"))
+                .andExpect(model()
+                        .attributeDoesNotExist("next"));
+    }
+
+    @Test
+    public void shouldHaveNextLinkIfMoreResultsAvailable() throws Exception {
+        List<TriggerResult> triggers = createEmptyTriggerResults(26);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers"))
+                .andExpect(model()
+                        .attribute("next", is("triggers?startFrom=25")));
+    }
+
+    @Test
+    public void shouldHaveNoPreviousLinkIfResultsStartAtZero() throws Exception {
+        List<TriggerResult> triggers = createEmptyTriggerResults(25);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers"))
+                .andExpect(model()
+                        .attributeDoesNotExist("prev"));
+    }
+
+    @Test
+    public void shouldHavePreviousLinkIfPreviousResultsAvailable() throws Exception {
+        List<TriggerResult> triggers = createEmptyTriggerResults(30);
+        when(triggerService.getLastResults()).thenReturn(triggers);
+
+        mockMvc
+                .perform(get("/triggers")
+                        .param("startFrom", "1"))
+                .andExpect(model()
+                        .attribute("prev", is("triggers?startFrom=0")))
+                .andExpect(model()
+                        .attribute("prev", is("triggers?startFrom=0")));
+    }
+
+    private List<TriggerResult> createEmptyTriggerResults(int numberOfTriggers) {
+        List<TriggerResult> result = new ArrayList<>();
+        for (int i = 0; i < numberOfTriggers; i++) {
+            result.add(new TriggerResult("" + i, TriggerStatus.fromHttpStatus(200), Optional.empty(), mock(JobDefinition.class)));
+        }
+        return result;
+    }
+
+    private ViewResolver viewResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        SpringTemplateEngine engine = new SpringTemplateEngine();
+        engine.setTemplateResolver(templateResolver);
+
+        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setTemplateEngine(engine);
+        return viewResolver;
+    }
+
 }

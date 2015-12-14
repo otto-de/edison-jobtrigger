@@ -9,6 +9,10 @@
         </encoder>
     </appender>
 
+    <logger name="org.thymeleaf">
+        <level value="OFF"/>
+    </logger>
+
     <root level="INFO">
         <appender-ref ref="console"/>
     </root>

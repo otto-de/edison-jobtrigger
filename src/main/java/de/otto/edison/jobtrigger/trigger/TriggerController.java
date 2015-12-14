@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.toList;
 @Controller
 public class TriggerController {
 
-    private static final int PAGE_SIZE = 25;
+    protected static final int PAGE_SIZE = 25;
 
     @Autowired
     private TriggerService triggerService;
