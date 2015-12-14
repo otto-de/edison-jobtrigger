@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 /*
@@ -11,7 +12,7 @@ Extend the basePackages to de.otto.edison so SpringBoot is able to find
 the components configured by edison-microservice
 */
 @ComponentScan(basePackages = "de.otto.edison")
-@PropertySource("version.properties")
+@PropertySource("/version.properties")
 @SpringBootApplication
 public class Server {
 
