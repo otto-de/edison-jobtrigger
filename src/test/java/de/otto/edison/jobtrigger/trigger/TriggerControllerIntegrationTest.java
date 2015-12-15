@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringApplicationConfiguration({Server.class})
-@WebIntegrationTest
+@WebIntegrationTest("server.port:0")
 public class TriggerControllerIntegrationTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
@@ -53,7 +53,7 @@ public class TriggerControllerIntegrationTest extends AbstractTestNGSpringContex
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
-    @Test(enabled = false) // TODO: hv/sr currently disabled since this test won't run with gradle :(
+    @Test
     public void shouldReturnListOfTriggers() throws Exception {
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of());
 
