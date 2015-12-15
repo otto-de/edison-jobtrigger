@@ -1,6 +1,8 @@
 package de.otto.edison.jobtrigger.acceptance;
 
-import org.testng.annotations.Test;
+
+
+import org.junit.Test;
 
 import java.io.IOException;
 
@@ -12,7 +14,6 @@ import static de.otto.edison.jobtrigger.testsupport.dsl.When.when;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpStatus.OK;
 
-@Test
 public class HealthEndpointAcceptanceTest {
 
     @Test

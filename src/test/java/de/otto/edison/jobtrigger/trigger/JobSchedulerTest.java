@@ -2,13 +2,14 @@ package de.otto.edison.jobtrigger.trigger;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
 
 import static org.mockito.Mockito.*;
 
@@ -20,7 +21,7 @@ public class JobSchedulerTest {
     @InjectMocks
     private JobScheduler testee;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
     }

@@ -53,12 +53,6 @@ dependencies {
 test {
     // pass -Dspring.profiles.active=local and other system properties to the test task
     systemProperties = System.properties
-
-    description "Tell gradle to use TestNG with all groups"
-    useTestNG()
-    options {
-        useDefaultListeners = true
-    }
 }
 
 tasks.processResources << {

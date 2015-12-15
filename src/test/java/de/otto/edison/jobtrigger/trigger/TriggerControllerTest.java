@@ -2,13 +2,13 @@ package de.otto.edison.jobtrigger.trigger;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.ViewResolver;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Test
 public class TriggerControllerTest {
 
     @Mock
@@ -35,7 +34,7 @@ public class TriggerControllerTest {
 
     private MockMvc mockMvc;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         initMocks(this);
 

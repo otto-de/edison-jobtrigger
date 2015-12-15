@@ -1,6 +1,6 @@
 package de.otto.edison.jobtrigger.acceptance;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 
@@ -10,7 +10,6 @@ import static de.otto.edison.jobtrigger.testsupport.dsl.Then.*;
 import static de.otto.edison.jobtrigger.testsupport.dsl.When.when;
 import static org.hamcrest.Matchers.*;
 
-@Test
 public class ApplicationStatusAcceptanceTest {
 
     @Test

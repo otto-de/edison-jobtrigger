@@ -3,6 +3,9 @@ package de.otto.edison.jobtrigger.trigger;
 import com.google.common.collect.ImmutableList;
 import de.otto.edison.jobtrigger.Server;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -10,12 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -24,7 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringApplicationConfiguration({Server.class})
 @WebIntegrationTest("server.port:0")
-public class TriggerControllerIntegrationTest extends AbstractTestNGSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TriggerControllerIntegrationTest {
 
     @Autowired
     private TriggerService triggerService;
@@ -36,7 +39,7 @@ public class TriggerControllerIntegrationTest extends AbstractTestNGSpringContex
     private DiscoveryService discoveryService;
 
     @Configuration
-    @PropertySource(value = "/version.properties", ignoreResourceNotFound = false)
+    @PropertySource("/version.properties")
     static class TestConfig {
         @Bean
         @Primary
@@ -47,7 +50,7 @@ public class TriggerControllerIntegrationTest extends AbstractTestNGSpringContex
 
     private MockMvc mockMvc;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         initMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
