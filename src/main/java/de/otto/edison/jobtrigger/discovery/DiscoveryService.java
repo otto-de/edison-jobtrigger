@@ -1,5 +1,6 @@
 package de.otto.edison.jobtrigger.discovery;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.ning.http.client.AsyncHttpClient;
@@ -35,6 +36,7 @@ import static java.util.stream.Collectors.toList;
 public class DiscoveryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryService.class);
+    public static final String JOB_DEFINITION_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/job/definition";
 
     @Autowired
     private AsyncHttpClient httpClient;
@@ -44,8 +46,7 @@ public class DiscoveryService {
     private volatile DiscoveryListener listener;
     private volatile ImmutableList<JobDefinition> jobDefinitions = ImmutableList.of();
 
-    public DiscoveryService() {
-    }
+    public DiscoveryService() {}
 
     @PostConstruct
     public void postConstruct() {
@@ -73,7 +74,8 @@ public class DiscoveryService {
         return jobDefinitions;
     }
 
-    private ImmutableList<JobDefinition> discover() {
+    @VisibleForTesting
+    ImmutableList<JobDefinition> discover() {
         final List<JobDefinition> result = new CopyOnWriteArrayList<>();
         serviceRegistry.findServices()
                 .parallelStream()
@@ -97,16 +99,17 @@ public class DiscoveryService {
         return ImmutableList.copyOf(result);
     }
 
-    private List<JobDefinition> jobDefinitionsFrom(final RegisteredService service, final Response jobDefinitionsResponse) {
+    @VisibleForTesting
+    List<JobDefinition> jobDefinitionsFrom(final RegisteredService service, final Response jobDefinitionsResponse) {
         try {
             final LinksRepresentation document = new Gson()
                     .fromJson(jobDefinitionsResponse.getResponseBody(), LinksRepresentation.class);
             final List<String> jobDefinitionUrls = document.getLinks().stream()
-                    .filter(l -> l.rel.equals("http://github.com/otto-de/edison/link-relations/job/definition"))
+                    .filter(l -> l.rel.equals(JOB_DEFINITION_LINK_RELATION_TYPE))
                     .map(l -> l.href)
                     .collect(toList());
             if (jobDefinitionUrls.isEmpty()) {
-                LOG.warn("Did not find any URLs with rel=http://github.com/otto-de/edison/link-relations/job/definition in job definition.");
+                LOG.warn("Did not find any URLs with rel={}", JOB_DEFINITION_LINK_RELATION_TYPE);
             }
             final List<JobDefinition> jobDefinitions = new CopyOnWriteArrayList<>();
             jobDefinitionUrls
@@ -135,7 +138,8 @@ public class DiscoveryService {
         }
     }
 
-    private JobDefinition jobDefinitionFrom(final String definitionUrl, final RegisteredService service, final Response response) throws IOException {
+    @VisibleForTesting
+    JobDefinition jobDefinitionFrom(final String definitionUrl, final RegisteredService service, final Response response) throws IOException {
         final JobDefinitionRepresentation def = new Gson()
                 .fromJson(response.getResponseBody(), JobDefinitionRepresentation.class);
         final Optional<Link> triggerLink = def.getLinks().stream()
