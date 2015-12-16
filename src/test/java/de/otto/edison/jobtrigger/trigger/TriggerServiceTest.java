@@ -108,36 +108,6 @@ public class TriggerServiceTest {
         ));
     }
 
-    private void assertJobTriggerEquality(List<JobTrigger> actual, List<JobTrigger> expected) {
-        assertThat(actual.size(), is(expected.size()));
-        Iterator<JobTrigger> actualTriggerIterator = actual.iterator();
-        Iterator<JobTrigger> expectedTriggerIterator = expected.iterator();
-        while(expectedTriggerIterator.hasNext()) {
-            assertThat(jobTriggerEquivalence.equivalent(expectedTriggerIterator.next(), actualTriggerIterator.next()), is(true));
-        }
-    }
-
-    private Equivalence<JobTrigger> jobTriggerEquivalence = new Equivalence<JobTrigger>() {
-        @Override
-        protected boolean doEquivalent(JobTrigger a, JobTrigger b) {
-            JobTrigger that = (JobTrigger) b;
-
-            if (a.getDefinition() != null ? !a.getDefinition().equals(that.getDefinition()) : that.getDefinition() != null)
-                return false;
-            if (a.getTrigger() != null ? !a.getTrigger().equals(that.getTrigger()) : that.getTrigger() != null)
-                return false;
-            return !(a.getRunnable() != null ? !a.getRunnable().equals(that.getRunnable()) : that.getRunnable() != null);
-        }
-
-        @Override
-        protected int doHash(JobTrigger jobTrigger) {
-            int result = jobTrigger.getDefinition() != null ? jobTrigger.getDefinition().hashCode() : 0;
-            result = 31 * result + (jobTrigger.getTrigger() != null ? jobTrigger.getTrigger().hashCode() : 0);
-            result = 31 * result + (jobTrigger.getRunnable() != null ? jobTrigger.getRunnable().hashCode() : 0);
-            return result;
-        }
-    };
-
     @Test
     public void shouldAddSuccessfulResponseAsLastResult() throws Exception {
         Response responseMock = mock(Response.class);
@@ -199,4 +169,35 @@ public class TriggerServiceTest {
         assertThat(triggerResult.getTriggerStatus().getMessage(), is("Connection Refused"));
         assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.FAILED));
     }
+
+    private void assertJobTriggerEquality(List<JobTrigger> actual, List<JobTrigger> expected) {
+        assertThat(actual.size(), is(expected.size()));
+        Iterator<JobTrigger> actualTriggerIterator = actual.iterator();
+        Iterator<JobTrigger> expectedTriggerIterator = expected.iterator();
+        while(expectedTriggerIterator.hasNext()) {
+            assertThat(jobTriggerEquivalence.equivalent(expectedTriggerIterator.next(), actualTriggerIterator.next()), is(true));
+        }
+    }
+
+    private Equivalence<JobTrigger> jobTriggerEquivalence = new Equivalence<JobTrigger>() {
+        @Override
+        protected boolean doEquivalent(JobTrigger a, JobTrigger b) {
+            JobTrigger that = (JobTrigger) b;
+
+            if (a.getDefinition() != null ? !a.getDefinition().equals(that.getDefinition()) : that.getDefinition() != null)
+                return false;
+            if (a.getTrigger() != null ? !a.getTrigger().equals(that.getTrigger()) : that.getTrigger() != null)
+                return false;
+            return !(a.getRunnable() != null ? !a.getRunnable().equals(that.getRunnable()) : that.getRunnable() != null);
+        }
+
+        @Override
+        protected int doHash(JobTrigger jobTrigger) {
+            int result = jobTrigger.getDefinition() != null ? jobTrigger.getDefinition().hashCode() : 0;
+            result = 31 * result + (jobTrigger.getTrigger() != null ? jobTrigger.getTrigger().hashCode() : 0);
+            result = 31 * result + (jobTrigger.getRunnable() != null ? jobTrigger.getRunnable().hashCode() : 0);
+            return result;
+        }
+    };
+
 }
