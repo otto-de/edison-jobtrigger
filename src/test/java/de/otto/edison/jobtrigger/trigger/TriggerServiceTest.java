@@ -3,11 +3,11 @@ package de.otto.edison.jobtrigger.trigger;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.ImmutableList;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.definition.JobDefinitionBuilder;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -17,11 +17,11 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
@@ -30,13 +30,11 @@ import java.util.Optional;
 import static de.otto.edison.jobtrigger.trigger.Triggers.cronTrigger;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @PrepareForTest(TriggerRunnables.class)
@@ -96,9 +94,7 @@ public class TriggerServiceTest {
 
         testee.startTriggering();
 
-
         verify(scheduler).updateTriggers(listArgumentCaptor.capture());
-
         assertJobTriggerEquality(listArgumentCaptor.getValue(),
         ImmutableList.of(
                 new JobTrigger(
@@ -141,4 +137,66 @@ public class TriggerServiceTest {
             return result;
         }
     };
+
+    @Test
+    public void shouldAddSuccessfulResponseAsLastResult() throws Exception {
+        Response responseMock = mock(Response.class);
+        JobDefinition jobDefinition = mock(JobDefinition.class);
+        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+
+        when(responseMock.getStatusCode()).thenReturn(200);
+
+        responseConsumer.consume(responseMock);
+
+        TriggerResult triggerResult = testee.getLastResults().get(0);
+        assertThat(testee.getLastResults(), hasSize(1));
+        assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
+        assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.OK));
+    }
+
+    @Test
+    public void shouldRemoveLastResultsIfMoreThanMaxResults() throws Exception {
+        for(int i = 0; i < TriggerService.MAX_RESULTS + 10; i++) {
+            Response responseMock = mock(Response.class);
+            JobDefinition jobDefinition = mock(JobDefinition.class);
+            TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+
+            when(responseMock.getStatusCode()).thenReturn(200);
+
+            responseConsumer.consume(responseMock);
+        }
+
+        assertThat(testee.getLastResults(), hasSize(TriggerService.MAX_RESULTS));
+    }
+
+    @Test
+    public void shouldAddThrowableAsLastResult() throws Exception {
+        Exception throwable = new Exception("some message");
+        JobDefinition jobDefinition = mock(JobDefinition.class);
+        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+
+        responseConsumer.consume(throwable);
+
+        TriggerResult triggerResult = testee.getLastResults().get(0);
+        assertThat(testee.getLastResults(), hasSize(1));
+        assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
+        assertThat(triggerResult.getTriggerStatus().getMessage(), is("some message"));
+        assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.FAILED));
+    }
+
+    @Test
+    public void shouldAddConnectExceptionAsLastResult() throws Exception {
+        Exception throwable = new ConnectException("some connect exception");
+        JobDefinition jobDefinition = mock(JobDefinition.class);
+        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+
+
+        responseConsumer.consume(throwable);
+
+        TriggerResult triggerResult = testee.getLastResults().get(0);
+        assertThat(testee.getLastResults(), hasSize(1));
+        assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
+        assertThat(triggerResult.getTriggerStatus().getMessage(), is("Connection Refused"));
+        assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.FAILED));
+    }
 }

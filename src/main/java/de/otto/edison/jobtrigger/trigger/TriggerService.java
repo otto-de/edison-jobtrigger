@@ -87,32 +87,7 @@ public class TriggerService implements DiscoveryListener {
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
-        return httpTriggerRunnable(httpClient, jobDefinition, new TriggerResponseConsumer() {
-            @Override
-            public void consume(final Response response) {
-                try {
-                    int statusCode = response.getStatusCode();
-                    String location = response.getHeader("Location");
-                    lastResult.addFirst(new TriggerResult(nextId(), fromHttpStatus(statusCode), ofNullable(location), jobDefinition));
-                    while (lastResult.size() > MAX_RESULTS) {
-                        lastResult.removeLast();
-                    }
-                    LOG.info("Triggered {}: status = {}, location = {}", jobDefinition.getTriggerUrl(), statusCode, location);
-                } catch (final Exception e) {
-                    LOG.error("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), e.getMessage(), e);
-                }
-            }
-
-            @Override
-            public void consume(final Throwable throwable) {
-                if (throwable instanceof ConnectException) {
-                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage("Connection Refused"), emptyMessage(), jobDefinition));
-                } else {
-                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage(throwable.getMessage()), emptyMessage(), jobDefinition));
-                }
-                LOG.warn("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), throwable.getMessage(), throwable);
-            }
-        });
+        return httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition));
     }
 
     private Optional<String> emptyMessage() {
@@ -131,6 +106,39 @@ public class TriggerService implements DiscoveryListener {
         } else {
             LOG.warn("No Trigger found for job definition " + jobDefinition.getTriggerUrl());
             return triggerContext -> null;
+        }
+    }
+
+    class DefaultTriggerResponseConsumer implements TriggerResponseConsumer {
+        private final JobDefinition jobDefinition;
+
+        public DefaultTriggerResponseConsumer(JobDefinition jobDefinition) {
+            this.jobDefinition = jobDefinition;
+        }
+
+        @Override
+        public void consume(final Response response) {
+            try {
+                int statusCode = response.getStatusCode();
+                String location = response.getHeader("Location");
+                lastResult.addFirst(new TriggerResult(nextId(), fromHttpStatus(statusCode), ofNullable(location), jobDefinition));
+                while (lastResult.size() > MAX_RESULTS) {
+                    lastResult.removeLast();
+                }
+                LOG.info("Triggered {}: status = {}, location = {}", jobDefinition.getTriggerUrl(), statusCode, location);
+            } catch (final Exception e) {
+                LOG.error("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public void consume(final Throwable throwable) {
+            if (throwable instanceof ConnectException) {
+                lastResult.addFirst(new TriggerResult(nextId(), fromMessage("Connection Refused"), emptyMessage(), jobDefinition));
+            } else {
+                lastResult.addFirst(new TriggerResult(nextId(), fromMessage(throwable.getMessage()), emptyMessage(), jobDefinition));
+            }
+            LOG.warn("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), throwable.getMessage(), throwable);
         }
     }
 }

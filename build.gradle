@@ -32,7 +32,9 @@ repositories {
 configurations.all {
     // check for updates every build
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    resolutionStrategy.force "org.javassist:javassist:3.18.2-GA" // TODO: pinning javassist to this version as there's a bug with powermock, javassist and Java 8 lambdas in later versions
+    // FIXME: pinning javassist to this version as there's a bug with powermock & javassist (3.20.0-GA) and Java 8 lambdas in later versions
+    // be careful, javassist is a transitiv dependency for spring as well so this might cause trouble in the future
+    resolutionStrategy.force "org.javassist:javassist:3.18.2-GA"
     exclude group: "org.slf4j", module: "slf4j-log4j12"
     exclude group: "log4j", module: "log4j"
     exclude module: "spring-boot-starter-tomcat"
