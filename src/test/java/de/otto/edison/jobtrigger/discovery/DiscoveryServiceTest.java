@@ -168,6 +168,36 @@ public class DiscoveryServiceTest {
 
     }
 
+    @Test
+    public void shouldCatchIOExceptionOnResponseError() throws Exception {
+        Response errorThrowingResponse = mock(Response.class);
+        when(errorThrowingResponse.getResponseBody()).thenThrow(new IOException("Expected Exception"));
+
+        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), errorThrowingResponse);
+
+        assertThat(jobDefinitions.isEmpty(), is(true));
+
+    }
+
+    @Test
+    @Ignore("Ignored until bug is fixed")
+    public void shouldIgnoreNullValuesInJobDefinitionsList() throws Exception {
+        JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
+        jobDefinitionRepresentation.setLinks(ImmutableList.of());
+
+        Response singleJobDefinitionResponse = mock(Response.class);
+
+        when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
+                new Gson().toJson(jobDefinitionRepresentation)
+        );
+
+        stubHttpResponse(singleJobDefinitionResponse);
+
+        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+
+        assertThat(jobDefinitions, hasSize(0));
+    }
+
     private void stubHttpResponse(Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
         stubHttpResponse(null, response);
     }
