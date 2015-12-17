@@ -3,9 +3,9 @@ package de.otto.edison.jobtrigger.discovery;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.junit.Before;
@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static de.otto.edison.registry.api.Link.link;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -38,7 +40,7 @@ public class DiscoveryServiceTest {
     @InjectMocks
     DiscoveryService discoveryService;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private AsyncHttpClient httpClient;
 
     @Mock
@@ -94,14 +96,13 @@ public class DiscoveryServiceTest {
 
     @Ignore("Ignored until Validation is implemented")
     @Test
-    public void shouldValidateResponseBody() throws IOException {
+    public void shouldValidateResponseBody() throws IOException, ExecutionException, InterruptedException {
         RegisteredService service = someService();
 
         Response response = mock(Response.class);
+        when(response.getResponseBody()).thenReturn("");
+        stubHttpResponse(response);
 
-        when(response.getResponseBody()).thenReturn(
-                ""
-        );
         JobDefinition jobDefintion = discoveryService.jobDefinitionFrom("someDefinitionUrl", service, response);
 
         assertThat(jobDefintion, is(not(nullValue())));
@@ -111,7 +112,7 @@ public class DiscoveryServiceTest {
     public void shouldFetchJobDefinitionsURLsForEveryService() throws Exception {
         when(serviceRegistry.findServices())
                 .thenReturn(ImmutableList.of(someService(), someService()));
-        when(httpClient.prepareGet(any()).execute().get()).thenReturn(mock(Response.class));
+        stubHttpResponse(mock(Response.class));
 
         discoveryService.rediscover();
 
@@ -119,23 +120,32 @@ public class DiscoveryServiceTest {
     }
 
     @Test
-    @Ignore("deep stubbing doesn't work with powermock, finding another solution")
-    public void shouldFetchJobDefinitions() throws Exception {
+    public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
         LinksRepresentation linksRepresentation = new LinksRepresentation();
         linksRepresentation.setLinks(ImmutableList.of(
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref" ,"someTitle"),
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref" ,"someOtherTitle")));
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/internal/jobdefinitions" ,"someTitle"),
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/internal/jobdefinitions" ,"someOtherTitle")));
 
         Response response = mock(Response.class);
         when(response.getResponseBody()).thenReturn(
                 new Gson().toJson(linksRepresentation)
         );
-
-
-        when(httpClient.prepareGet(any()).execute().get()).thenReturn(mock(Response.class));
+        when(response.getStatusCode()).thenReturn(200);
+        stubHttpResponse(response);
 
         List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), response);
 
-        verify(httpClient, times(2)).prepareGet("someHref/internal/jobdefinitions");
+        verify(httpClient).prepareGet("someHref/internal/jobdefinitions");
+        verify(httpClient).prepareGet("someOtherHref/internal/jobdefinitions");
+        assertThat(jobDefinitions, hasSize(2));
+    }
+
+    private void stubHttpResponse(Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
+        AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        ListenableFuture listenableFutureStub = mock(ListenableFuture.class);
+        when(httpClient.prepareGet(any())).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
+        when(listenableFutureStub.get()).thenReturn(response);
     }
 }

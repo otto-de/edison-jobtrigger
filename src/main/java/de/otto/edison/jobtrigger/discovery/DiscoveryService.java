@@ -37,6 +37,7 @@ public class DiscoveryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryService.class);
     public static final String JOB_DEFINITION_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/job/definition";
+    public static final String JOB_TRIGGER_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/job/trigger";
 
     @Autowired
     private AsyncHttpClient httpClient;
@@ -143,7 +144,7 @@ public class DiscoveryService {
         final JobDefinitionRepresentation def = new Gson()
                 .fromJson(response.getResponseBody(), JobDefinitionRepresentation.class);
         final Optional<Link> triggerLink = def.getLinks().stream()
-                .filter(l -> l.rel.equals("http://github.com/otto-de/edison/link-relations/job/trigger"))
+                .filter(l -> l.rel.equals(JOB_TRIGGER_LINK_RELATION_TYPE))
                 .findAny();
         if (triggerLink.isPresent()) {
             return new JobDefinition(
