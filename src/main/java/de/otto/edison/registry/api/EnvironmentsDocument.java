@@ -29,4 +29,12 @@ public class EnvironmentsDocument {
     public List<Link> getLinks() {
         return links;
     }
+
+    @Override
+    public String toString() {
+        return "EnvironmentsDocument{" +
+                "groups=" + groups +
+                ", links=" + links +
+                '}';
+    }
 }
