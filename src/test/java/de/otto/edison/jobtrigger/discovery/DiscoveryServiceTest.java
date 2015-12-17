@@ -67,34 +67,12 @@ public class DiscoveryServiceTest {
         assertThat(jd.getDefinitionUrl(), is("someDefinitionUrl"));
         assertThat(jd.getDescription(), is("MyJob"));
         assertThat(jd.getEnv(), is(ENV_NAME));
-        assertThat(jd.getFixedDelay(), is(Optional.of(Duration.ofSeconds(12l))));
+        assertThat(jd.getFixedDelay(), is(Optional.of(Duration.ofSeconds(12L))));
         assertThat(jd.getJobType(), is("someType"));
         assertThat(jd.getRetries(), is(12));
-        assertThat(jd.getRetryDelay(), is(Optional.of(Duration.ofSeconds(12l))));
+        assertThat(jd.getRetryDelay(), is(Optional.of(Duration.ofSeconds(12L))));
         assertThat(jd.getService(), is("myService"));
         assertThat(jd.getTriggerUrl(), is(DEFAULT_TRIGGER_URL));
-    }
-
-    private JobDefinitionRepresentation someJobDefinitionRepresentation() {
-        JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
-        jobDefinitionRepresentation.setCron("* * * * * *");
-        jobDefinitionRepresentation.setFixedDelay(12l);
-        jobDefinitionRepresentation.setLinks(ImmutableList.of(link("http://github.com/otto-de/edison/link-relations/job/trigger", DEFAULT_TRIGGER_URL, "title")));
-        jobDefinitionRepresentation.setName("MyJob");
-        jobDefinitionRepresentation.setRetries(12);
-        jobDefinitionRepresentation.setRetryDelay(12l);
-        jobDefinitionRepresentation.setType("someType");
-        return jobDefinitionRepresentation;
-    }
-
-    private RegisteredService someService() {
-        return new RegisteredService(
-                "myService",
-                "someHref",
-                "someDescription",
-                Duration.ZERO,
-                "someEnv",
-                ImmutableList.of());
     }
 
     @Ignore("Ignored until Validation is implemented")
@@ -124,7 +102,6 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
-
         Response singleJobDefinitionResponse = mock(Response.class);
         when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
@@ -132,27 +109,13 @@ public class DiscoveryServiceTest {
         );
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient).prepareGet("someHref/myJobDefinitions");
         verify(httpClient).prepareGet("someOtherHref/myJobDefinitions");
         assertThat(jobDefinitions, hasSize(2));
         assertThat(jobDefinitions.get(0).getTriggerUrl(), is(DEFAULT_TRIGGER_URL));
     }
-
-    private Response jobDefinitionLinks() throws IOException {
-        LinksRepresentation linksRepresentation = new LinksRepresentation();
-        linksRepresentation.setLinks(ImmutableList.of(
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/myJobDefinitions", "someTitle"),
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/myJobDefinitions", "someOtherTitle")));
-
-        Response jobDefinitionsResponse = mock(Response.class);
-        when(jobDefinitionsResponse.getResponseBody()).thenReturn(
-                new Gson().toJson(linksRepresentation)
-        );
-        return jobDefinitionsResponse;
-    }
-
 
     @Test
     public void shouldNotFetchSingleJobDefinitionWhenReceivingErrorResponse() throws Exception {
@@ -161,11 +124,10 @@ public class DiscoveryServiceTest {
         when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
 
-        discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+        discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient, times(2)).prepareGet(anyString());
         verifyNoMoreInteractions(httpClient);
-
     }
 
     @Test
@@ -175,8 +137,7 @@ public class DiscoveryServiceTest {
 
         List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), errorThrowingResponse);
 
-        assertThat(jobDefinitions.isEmpty(), is(true));
-
+        assertThat(jobDefinitions, hasSize(0));
     }
 
     @Test
@@ -193,9 +154,33 @@ public class DiscoveryServiceTest {
 
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         assertThat(jobDefinitions, hasSize(0));
+    }
+
+    @Test
+    public void shouldCallListenerForAllServices() throws Exception {
+        when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
+
+        Response serviceResponse = jobDefinitionLinksResponse();
+        when(serviceResponse.getStatusCode()).thenReturn(200);
+
+        stubHttpResponse("someHref/internal/jobdefinitions", serviceResponse);
+
+        Response singleJobDefinitionResponse = mock(Response.class);
+        when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
+        when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
+                new Gson().toJson(someJobDefinitionRepresentation())
+        );
+        stubHttpResponse("someHref/myJobDefinitions", singleJobDefinitionResponse);
+        stubHttpResponse("someOtherHref/myJobDefinitions", singleJobDefinitionResponse);
+
+        DiscoveryListener listenerMock = mock(DiscoveryListener.class);
+        discoveryService.register(listenerMock);
+        discoveryService.rediscover();
+
+        verify(listenerMock).updatedJobDefinitions();
     }
 
     private void stubHttpResponse(Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
@@ -203,12 +188,48 @@ public class DiscoveryServiceTest {
     }
 
     // manual deep stubbing is necessary because PowerMock does not support deep stubbing automatically
+    @SuppressWarnings("unchecked")
     private void stubHttpResponse(String url, Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
         AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
-        ListenableFuture listenableFutureStub = mock(ListenableFuture.class);
+        ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
         when(httpClient.prepareGet(url == null ? anyString() : url)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
         when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
         when(listenableFutureStub.get()).thenReturn(response);
+    }
+
+    private Response jobDefinitionLinksResponse() throws IOException {
+        LinksRepresentation linksRepresentation = new LinksRepresentation();
+        linksRepresentation.setLinks(ImmutableList.of(
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/myJobDefinitions", "someTitle"),
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/myJobDefinitions", "someOtherTitle")));
+
+        Response jobDefinitionsResponse = mock(Response.class);
+        when(jobDefinitionsResponse.getResponseBody()).thenReturn(
+                new Gson().toJson(linksRepresentation)
+        );
+        return jobDefinitionsResponse;
+    }
+
+    private JobDefinitionRepresentation someJobDefinitionRepresentation() {
+        JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
+        jobDefinitionRepresentation.setCron("* * * * * *");
+        jobDefinitionRepresentation.setFixedDelay(12L);
+        jobDefinitionRepresentation.setLinks(ImmutableList.of(link("http://github.com/otto-de/edison/link-relations/job/trigger", DEFAULT_TRIGGER_URL, "title")));
+        jobDefinitionRepresentation.setName("MyJob");
+        jobDefinitionRepresentation.setRetries(12);
+        jobDefinitionRepresentation.setRetryDelay(12L);
+        jobDefinitionRepresentation.setType("someType");
+        return jobDefinitionRepresentation;
+    }
+
+    private RegisteredService someService() {
+        return new RegisteredService(
+                "myService",
+                "someHref",
+                "someDescription",
+                Duration.ZERO,
+                "someEnv",
+                ImmutableList.of());
     }
 }
