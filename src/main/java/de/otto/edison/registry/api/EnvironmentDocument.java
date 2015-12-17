@@ -39,4 +39,12 @@ public class EnvironmentDocument {
     public List<Link> getLinks() {
         return links;
     }
+
+    @Override
+    public String toString() {
+        return "EnvironmentDocument{" +
+                "groups=" + groups +
+                ", links=" + links +
+                '}';
+    }
 }
