@@ -2,29 +2,26 @@ package de.otto.edison.jobtrigger.discovery;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.trigger.TriggerController;
-import de.otto.edison.jobtrigger.trigger.TriggerService;
 import de.otto.edison.jobtrigger.util.TestViewResolverBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.validator.TestClassValidator;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class DiscoveryControllerTest {
 
@@ -54,10 +51,25 @@ public class DiscoveryControllerTest {
 
     @Test
     public void shouldCallEnvironmentsOf() throws Exception {
-        JobDefinition jobDefinition = new JobDefinition(
-                "someUrl",
-                "expectedEnv",
-                "someService",
+        JobDefinition jobDefinition = jobDefinition("expectedEnv", "someUrl", "someService");
+        List<JobDefinition> jobDefinitions = ImmutableList.of(jobDefinition);
+        when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(
+                jobDefinition("expectedEnv1", "firstUrl", "someService1"),
+                jobDefinition("expectedEnv2", "secondsUrl", "someService2"),
+                jobDefinition("expectedEnv2", "thirdUrl", "someService3")
+        ));
+
+        mockMvc.perform(get("/discover"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("discover"))
+                .andExpect(model().attribute("environments", is(not(nullValue()))));
+    }
+
+    private JobDefinition jobDefinition(String environment, String jobDefinitionUrl, String service) {
+        return new JobDefinition(
+                jobDefinitionUrl,
+                environment,
+                service,
                 "someTriggerUrl",
                 "someJobType",
                 "someDescription",
@@ -65,11 +77,5 @@ public class DiscoveryControllerTest {
                 Optional.empty(),
                 3,
                 Optional.empty());
-        List<JobDefinition> jobDefinitions = ImmutableList.of(jobDefinition);
-
-        mockMvc.perform(get("/discover"))
-        .andExpect(status().is2xxSuccessful())
-        .andExpect(view().name("discover"));
-
     }
 }
