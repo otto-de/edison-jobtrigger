@@ -54,8 +54,7 @@ public class TriggerController {
     }
 
     @RequestMapping(value = "/triggers", method = RequestMethod.GET)
-    public ModelAndView getTriggers(final @RequestParam(required = false) String startFrom,
-                                    final HttpServletResponse response) {
+    public ModelAndView getTriggers(final @RequestParam(required = false) String startFrom) {
         final List<TriggerResult> triggerResults = triggerService.getLastResults();
         final int startIndex = startIndexOf(startFrom, triggerResults);
         final int endIndex = endIndexOf(triggerResults, startIndex);

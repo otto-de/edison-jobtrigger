@@ -37,7 +37,7 @@ public class DiscoveryServiceTest {
     public static final String DEFAULT_TRIGGER_URL = "someTriggerUrl";
 
     @InjectMocks
-    DiscoveryService discoveryService;
+    DiscoveryService testee;
 
     @Mock
     private AsyncHttpClient httpClient;
@@ -60,9 +60,9 @@ public class DiscoveryServiceTest {
         when(response.getResponseBody()).thenReturn(
                 new Gson().toJson(jobDefinitionRepresentation)
         );
-        JobDefinition jd = discoveryService.jobDefinitionFrom("someDefinitionUrl", service, response);
+        JobDefinition jd = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
 
-        assertThat(discoveryService, is(not(nullValue())));
+        assertThat(testee, is(not(nullValue())));
         assertThat(jd.getCron(), is(Optional.of("* * * * * *")));
         assertThat(jd.getDefinitionUrl(), is("someDefinitionUrl"));
         assertThat(jd.getDescription(), is("MyJob"));
@@ -84,7 +84,7 @@ public class DiscoveryServiceTest {
         when(response.getResponseBody()).thenReturn("");
         stubHttpResponse(response);
 
-        JobDefinition jobDefintion = discoveryService.jobDefinitionFrom("someDefinitionUrl", service, response);
+        JobDefinition jobDefintion = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
 
         assertThat(jobDefintion, is(not(nullValue())));
     }
@@ -95,7 +95,7 @@ public class DiscoveryServiceTest {
                 .thenReturn(ImmutableList.of(someService(), someService()));
         stubHttpResponse(mock(Response.class));
 
-        discoveryService.rediscover();
+        testee.rediscover();
 
         verify(httpClient, times(2)).prepareGet("someHref/internal/jobdefinitions");
     }
@@ -109,7 +109,7 @@ public class DiscoveryServiceTest {
         );
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient).prepareGet("someHref/myJobDefinitions");
         verify(httpClient).prepareGet("someOtherHref/myJobDefinitions");
@@ -124,7 +124,7 @@ public class DiscoveryServiceTest {
         when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
 
-        discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+        testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient, times(2)).prepareGet(anyString());
         verifyNoMoreInteractions(httpClient);
@@ -135,7 +135,7 @@ public class DiscoveryServiceTest {
         Response errorThrowingResponse = mock(Response.class);
         when(errorThrowingResponse.getResponseBody()).thenThrow(new IOException("Expected Exception"));
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), errorThrowingResponse);
+        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), errorThrowingResponse);
 
         assertThat(jobDefinitions, hasSize(0));
     }
@@ -154,7 +154,7 @@ public class DiscoveryServiceTest {
 
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         assertThat(jobDefinitions, hasSize(0));
     }
@@ -177,8 +177,8 @@ public class DiscoveryServiceTest {
         stubHttpResponse("someOtherHref/myJobDefinitions", singleJobDefinitionResponse);
 
         DiscoveryListener listenerMock = mock(DiscoveryListener.class);
-        discoveryService.register(listenerMock);
-        discoveryService.rediscover();
+        testee.register(listenerMock);
+        testee.rediscover();
 
         verify(listenerMock).updatedJobDefinitions();
     }

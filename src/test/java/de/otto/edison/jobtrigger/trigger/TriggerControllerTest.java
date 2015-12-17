@@ -1,6 +1,7 @@
 package de.otto.edison.jobtrigger.trigger;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.util.TestViewResolverBuilder;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class TriggerControllerTest {
         initMocks(this);
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setViewResolvers(viewResolver()).build();
+                .setViewResolvers(TestViewResolverBuilder.createViewResolver()).build();
     }
 
     @Test
@@ -153,18 +154,4 @@ public class TriggerControllerTest {
         }
         return result;
     }
-
-    private ViewResolver viewResolver() {
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setTemplateMode("HTML5");
-        templateResolver.setPrefix("templates/");
-        templateResolver.setSuffix(".html");
-        SpringTemplateEngine engine = new SpringTemplateEngine();
-        engine.setTemplateResolver(templateResolver);
-
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
-        viewResolver.setTemplateEngine(engine);
-        return viewResolver;
-    }
-
 }
