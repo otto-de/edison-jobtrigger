@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -29,13 +28,13 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DiscoveryServiceTest {
 
     public static final String ENV_NAME = "someEnv";
+    public static final String DEFAULT_TRIGGER_URL = "someTriggerUrl";
 
     @InjectMocks
     DiscoveryService discoveryService;
@@ -54,15 +53,7 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldConvertToJobDefinitions() throws IOException {
         RegisteredService service = someService();
-        JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
-        jobDefinitionRepresentation.setCron("* * * * * *");
-        jobDefinitionRepresentation.setFixedDelay(12l);
-        jobDefinitionRepresentation.setLinks(ImmutableList.of(link("http://github.com/otto-de/edison/link-relations/job/trigger", "href",  "title")));
-        jobDefinitionRepresentation.setName("MyJob");
-        jobDefinitionRepresentation.setRetries(12);
-        jobDefinitionRepresentation.setRetryDelay(12l);
-        jobDefinitionRepresentation.setType("someType");
-
+        JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
 
         Response response = mock(Response.class);
 
@@ -81,7 +72,19 @@ public class DiscoveryServiceTest {
         assertThat(jd.getRetries(), is(12));
         assertThat(jd.getRetryDelay(), is(Optional.of(Duration.ofSeconds(12l))));
         assertThat(jd.getService(), is("myService"));
-        assertThat(jd.getTriggerUrl(), is("href"));
+        assertThat(jd.getTriggerUrl(), is(DEFAULT_TRIGGER_URL));
+    }
+
+    private JobDefinitionRepresentation someJobDefinitionRepresentation() {
+        JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
+        jobDefinitionRepresentation.setCron("* * * * * *");
+        jobDefinitionRepresentation.setFixedDelay(12l);
+        jobDefinitionRepresentation.setLinks(ImmutableList.of(link("http://github.com/otto-de/edison/link-relations/job/trigger", DEFAULT_TRIGGER_URL, "title")));
+        jobDefinitionRepresentation.setName("MyJob");
+        jobDefinitionRepresentation.setRetries(12);
+        jobDefinitionRepresentation.setRetryDelay(12l);
+        jobDefinitionRepresentation.setType("someType");
+        return jobDefinitionRepresentation;
     }
 
     private RegisteredService someService() {
@@ -109,7 +112,7 @@ public class DiscoveryServiceTest {
     }
 
     @Test
-    public void shouldFetchJobDefinitionsURLsForEveryService() throws Exception {
+    public void shouldDiscoverJobDefinitionsURLsForEveryService() throws Exception {
         when(serviceRegistry.findServices())
                 .thenReturn(ImmutableList.of(someService(), someService()));
         stubHttpResponse(mock(Response.class));
@@ -121,29 +124,59 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
+
+        Response singleJobDefinitionResponse = mock(Response.class);
+        when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
+        when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
+                new Gson().toJson(someJobDefinitionRepresentation())
+        );
+        stubHttpResponse(singleJobDefinitionResponse);
+
+        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+
+        verify(httpClient).prepareGet("someHref/myJobDefinitions");
+        verify(httpClient).prepareGet("someOtherHref/myJobDefinitions");
+        assertThat(jobDefinitions, hasSize(2));
+        assertThat(jobDefinitions.get(0).getTriggerUrl(), is(DEFAULT_TRIGGER_URL));
+    }
+
+    private Response jobDefinitionLinks() throws IOException {
         LinksRepresentation linksRepresentation = new LinksRepresentation();
         linksRepresentation.setLinks(ImmutableList.of(
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/internal/jobdefinitions" ,"someTitle"),
-                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/internal/jobdefinitions" ,"someOtherTitle")));
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/myJobDefinitions", "someTitle"),
+                link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/myJobDefinitions", "someOtherTitle")));
 
-        Response response = mock(Response.class);
-        when(response.getResponseBody()).thenReturn(
+        Response jobDefinitionsResponse = mock(Response.class);
+        when(jobDefinitionsResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(linksRepresentation)
         );
-        when(response.getStatusCode()).thenReturn(200);
-        stubHttpResponse(response);
+        return jobDefinitionsResponse;
+    }
 
-        List<JobDefinition> jobDefinitions = discoveryService.jobDefinitionsFrom(someService(), response);
 
-        verify(httpClient).prepareGet("someHref/internal/jobdefinitions");
-        verify(httpClient).prepareGet("someOtherHref/internal/jobdefinitions");
-        assertThat(jobDefinitions, hasSize(2));
+    @Test
+    public void shouldNotFetchSingleJobDefinitionWhenReceivingErrorResponse() throws Exception {
+        Response errorResponse = mock(Response.class);
+        when(errorResponse.getStatusCode()).thenReturn(400);
+        when(errorResponse.getResponseBody()).thenReturn("");
+        stubHttpResponse(errorResponse);
+
+        discoveryService.jobDefinitionsFrom(someService(), jobDefinitionLinks());
+
+        verify(httpClient, times(2)).prepareGet(anyString());
+        verifyNoMoreInteractions(httpClient);
+
     }
 
     private void stubHttpResponse(Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
+        stubHttpResponse(null, response);
+    }
+
+    // manual deep stubbing is necessary because PowerMock does not support deep stubbing automatically
+    private void stubHttpResponse(String url, Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
         AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
         ListenableFuture listenableFutureStub = mock(ListenableFuture.class);
-        when(httpClient.prepareGet(any())).thenReturn(requestBuilderStub);
+        when(httpClient.prepareGet(url == null ? anyString() : url)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
         when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
         when(listenableFutureStub.get()).thenReturn(response);
