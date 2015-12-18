@@ -13,6 +13,7 @@ import static de.otto.edison.registry.api.Link.link;
  */
 public class ServiceDocument {
 
+    public static final String MICROSERVICE_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/microservice";
     private List<String> groups;
     private long expire;
     private List<Link> links;
@@ -28,7 +29,7 @@ public class ServiceDocument {
         this.links = new ArrayList<>();
         links.add(link("self", baseUrl + "/environments/" + service.getEnvironment() + "/" + service.getService(), "Self"));
         links.add(link("collection", baseUrl + "/environments/" + service.getEnvironment(), "All services in " + service.getEnvironment()));
-        links.add(link("http://github.com/otto-de/edison/link-relations/microservice", service.getHref(), service.getDescription()));
+        links.add(link(MICROSERVICE_LINK_RELATION_TYPE, service.getHref(), service.getDescription()));
     }
 
     public void setExpire(int expire) {
