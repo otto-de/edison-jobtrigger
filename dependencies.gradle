@@ -1,23 +1,25 @@
-ext.edisonrelease = "0.44.0"
+ext.edisonrelease = "0.46.2"
 ext.libraries = [
-        edison     : [
-                "de.otto.edison:health:"+edisonrelease,
-                "de.otto.edison:status:"+edisonrelease,
-                "de.otto.edison:metrics:"+edisonrelease
+        edison: [
+                "de.otto.edison:edison-health:"+edisonrelease,
+                "de.otto.edison:edison-status:"+edisonrelease,
+                "de.otto.edison:edison-metrics:"+edisonrelease
         ],
         bootstrap:
                 "org.webjars:bootstrap:3.3.5",
         guava:
                 "com.google.guava:guava:18.0",
-        logging    : [
+        logging: [
                 "ch.qos.logback:logback-core:1.0.13",
                 "ch.qos.logback:logback-classic:1.0.13",
                 "net.logstash.logback:logstash-logback-encoder:3.5",
                 "com.github.danielwegener:logback-kafka-appender:0.0.2"
         ],
-        gson        : ["com.google.code.gson:gson:2.2.4"],
-        asyncHttp   : ["com.ning:async-http-client:1.8.3"],
-        test       : [
+        gson:
+                "com.google.code.gson:gson:2.2.4",
+        asyncHttp:
+                "com.ning:async-http-client:1.8.3",
+        test: [
                 "junit:junit:4.12",
                 "org.mockito:mockito-core:1.10.8",
                 "org.powermock:powermock-module-junit4:1.6.4",
@@ -27,7 +29,7 @@ ext.libraries = [
                 "org.springframework:spring-test:4.2.3.RELEASE"
 
         ],
-        jetty      : [
+        jetty: [
                 "org.springframework.boot:spring-boot-starter-jetty:1.2.4.RELEASE"
         ]
 ]
