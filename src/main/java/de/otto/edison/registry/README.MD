@@ -5,6 +5,10 @@ A library to support registration of external microservices in different environ
 Clients of a registry are expected to update their registration on a regular base, for example every 10 Minutes.
 This way, the registry does not need to persist registered information.
 
+Using this library is intended for use in situations, where you do not need "real" service discovery, but
+only some very simple way to register services at other services. You should not expect high availability,
+but for some non-critial tools like edison-jobtrigger, this should be ok.
+
 # API
 
 ## /environments

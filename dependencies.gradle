@@ -1,4 +1,4 @@
-ext.edisonrelease = "0.46.2"
+ext.edisonrelease = "0.48.0-SNAPSHOT"
 ext.libraries = [
         edison: [
                 "de.otto.edison:edison-health:"+edisonrelease,
@@ -6,7 +6,7 @@ ext.libraries = [
                 "de.otto.edison:edison-metrics:"+edisonrelease
         ],
         bootstrap:
-                "org.webjars:bootstrap:3.3.5",
+                "org.webjars:bootstrap:3.3.6",
         guava:
                 "com.google.guava:guava:18.0",
         logging: [
