@@ -65,7 +65,7 @@ tasks.processResources << {
     if (versionProperties) {
         def gitVersion = runCommand("git log -n 1 --format=format:%H")
         def fullVersion = fullyQualifiedVersion()
-        versionProperties.text = "\ninfo.build.commit = ${gitVersion}" + "\ninfo.build.version = ${fullVersion}"
+        versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}"
     }
 }
 
