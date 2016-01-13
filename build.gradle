@@ -20,7 +20,7 @@ buildscript {
 
 archivesBaseName='edison-jobtrigger'
 group = 'de.otto.edison'
-version = '1.1.0-SNAPSHOT'
+version = '1.1.0'
 
 repositories {
     mavenCentral()
@@ -65,7 +65,7 @@ tasks.processResources << {
     if (versionProperties) {
         def gitVersion = runCommand("git log -n 1 --format=format:%H")
         def fullVersion = fullyQualifiedVersion()
-        versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}"
+        versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}" + "\nedison.status.vcs.url-template = https://github.com/otto-de/edison-jobtrigger"
     }
 }
 
