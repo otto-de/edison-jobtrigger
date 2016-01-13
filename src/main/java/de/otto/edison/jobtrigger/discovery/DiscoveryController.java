@@ -23,12 +23,6 @@ import static java.util.stream.Collectors.toList;
  * information about the jobs of the server. JobTrigger is using the definition to find out,
  * how often jobs should be triggered.
  *
- * The URL of the server used for discovery is either the URL of a edison-microservice (or
- * some other implementation that is providing job definitions in the same way as edison microservices do),
- * or the URL of a supported discovery service like Marathon. Discovery services provide information (especially URLs)
- * about other services. These information is then used to get the list of possible microservices, and then to
- * ask all of these services for job definitions.
- *
  * @author Guido Steinacker
  * @since 05.09.15
  */
