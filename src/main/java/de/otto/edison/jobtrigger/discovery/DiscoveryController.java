@@ -88,7 +88,7 @@ public class DiscoveryController {
                 .stream()
                 .map(def-> new LinkedHashMap<String, String>() {{
                     put("jobType", def.getJobType());
-                    put("frequency", def.getFixedDelay().isPresent() ? "Every " + def.getFixedDelay().get().toMinutes() + " minutes" : def.getCron().get());
+                    put("frequency", def.getFixedDelay().isPresent() ? "Every " + def.getFixedDelay().get().toMinutes() + " minutes" : def.getCron().isPresent() ? def.getCron().get() : "n/a");
                     put("description", def.getDescription());}})
                 .collect(toList());
     }
