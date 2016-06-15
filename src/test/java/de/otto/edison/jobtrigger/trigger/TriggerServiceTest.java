@@ -126,7 +126,7 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldRemoveLastResultsIfMoreThanMaxResults() throws Exception {
-        for(int i = 0; i < TriggerService.MAX_RESULTS + 10; i++) {
+        for(int i = 0; i < testee.getMaxJobResults() + 10; i++) {
             Response responseMock = mock(Response.class);
             JobDefinition jobDefinition = mock(JobDefinition.class);
             TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
@@ -136,7 +136,7 @@ public class TriggerServiceTest {
             responseConsumer.consume(responseMock);
         }
 
-        assertThat(testee.getLastResults(), hasSize(TriggerService.MAX_RESULTS));
+        assertThat(testee.getLastResults(), hasSize(testee.getMaxJobResults()));
     }
 
     @Test

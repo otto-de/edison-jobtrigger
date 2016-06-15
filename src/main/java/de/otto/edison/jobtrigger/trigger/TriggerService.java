@@ -7,6 +7,7 @@ import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Service;
 
@@ -37,18 +38,29 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class TriggerService implements DiscoveryListener {
 
     private static final Logger LOG = getLogger(TriggerService.class);
-    public static final int MAX_RESULTS = 1000;
 
-    @Autowired
     private DiscoveryService discoveryService;
-    @Autowired
     private JobScheduler scheduler;
-    @Autowired
     private AsyncHttpClient httpClient;
 
-    private final Deque<TriggerResult> lastResult = new ConcurrentLinkedDeque<>();
+    private int maxJobResults = 1000;
+
+    private final Deque<TriggerResult> lastResults = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
     private final AtomicLong currentIndex = new AtomicLong(0);
+
+    TriggerService() {
+        // FOR TESTING
+    }
+
+
+    @Autowired
+    public TriggerService(DiscoveryService discoveryService, JobScheduler scheduler, AsyncHttpClient httpClient, @Value("${edison.jobtrigger.jobresults.max:1000}") int maxJobResults) {
+        this.discoveryService = discoveryService;
+        this.scheduler = scheduler;
+        this.httpClient = httpClient;
+        this.maxJobResults = maxJobResults;
+    }
 
     @PostConstruct
     public void postConstruct() {
@@ -83,7 +95,7 @@ public class TriggerService implements DiscoveryListener {
     }
 
     public List<TriggerResult> getLastResults() {
-        return new ArrayList<>(lastResult);
+        return new ArrayList<>(lastResults);
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
@@ -121,9 +133,9 @@ public class TriggerService implements DiscoveryListener {
             try {
                 int statusCode = response.getStatusCode();
                 String location = response.getHeader("Location");
-                lastResult.addFirst(new TriggerResult(nextId(), fromHttpStatus(statusCode), ofNullable(location), jobDefinition));
-                while (lastResult.size() > MAX_RESULTS) {
-                    lastResult.removeLast();
+                lastResults.addFirst(new TriggerResult(nextId(), fromHttpStatus(statusCode), ofNullable(location), jobDefinition));
+                while (lastResults.size() > maxJobResults) {
+                    lastResults.removeLast();
                 }
                 LOG.info("Triggered {}: status = {}, location = {}", jobDefinition.getTriggerUrl(), statusCode, location);
             } catch (final Exception e) {
@@ -134,11 +146,15 @@ public class TriggerService implements DiscoveryListener {
         @Override
         public void consume(final Throwable throwable) {
             if (throwable instanceof ConnectException) {
-                lastResult.addFirst(new TriggerResult(nextId(), fromMessage("Connection Refused"), emptyMessage(), jobDefinition));
+                lastResults.addFirst(new TriggerResult(nextId(), fromMessage("Connection Refused"), emptyMessage(), jobDefinition));
             } else {
-                lastResult.addFirst(new TriggerResult(nextId(), fromMessage(throwable.getMessage()), emptyMessage(), jobDefinition));
+                lastResults.addFirst(new TriggerResult(nextId(), fromMessage(throwable.getMessage()), emptyMessage(), jobDefinition));
             }
             LOG.warn("Failed to trigger {}. Error: {}", jobDefinition.getTriggerUrl(), throwable.getMessage(), throwable);
         }
+    }
+
+    public int getMaxJobResults() {
+        return maxJobResults;
     }
 }
