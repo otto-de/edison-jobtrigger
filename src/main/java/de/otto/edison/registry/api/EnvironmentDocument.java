@@ -41,6 +41,25 @@ public class EnvironmentDocument {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EnvironmentDocument that = (EnvironmentDocument) o;
+
+        if (groups != null ? !groups.equals(that.groups) : that.groups != null) return false;
+        return links != null ? links.equals(that.links) : that.links == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = groups != null ? groups.hashCode() : 0;
+        result = 31 * result + (links != null ? links.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "EnvironmentDocument{" +
                 "groups=" + groups +

@@ -1,6 +1,5 @@
 package de.otto.edison.registry.api;
 
-import com.google.common.base.Equivalence;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import de.otto.edison.jobtrigger.util.TestViewResolverBuilder;
@@ -17,7 +16,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -65,7 +63,7 @@ public class RegistryControllerTest {
 
 
         EnvironmentsDocument environmentsDocument = new Gson().fromJson(mvcResult.getResponse().getContentAsString(), EnvironmentsDocument.class);
-        assertThat(environmentsDocumentEquivalence.wrap(expectedResult), is(environmentsDocumentEquivalence.wrap(environmentsDocument)));
+        assertThat(expectedResult, is(environmentsDocument));
     }
 
     @Test
@@ -102,7 +100,7 @@ public class RegistryControllerTest {
 
 
         EnvironmentDocument environmentsDocument = new Gson().fromJson(mvcResult.getResponse().getContentAsString(), EnvironmentDocument.class);
-        assertThat(environment_DocumentEquivalence.wrap(expectedResult), is(environment_DocumentEquivalence.wrap(environmentsDocument)));
+        assertThat(expectedResult, is(environmentsDocument));
     }
 
 
@@ -131,36 +129,6 @@ public class RegistryControllerTest {
 
 
     }
-
-    //TODO: remove as soon as we have equal method in EnvironmentsDocument
-    private Equivalence<EnvironmentsDocument> environmentsDocumentEquivalence = new Equivalence<EnvironmentsDocument>() {
-        @Override
-        protected boolean doEquivalent(EnvironmentsDocument a, EnvironmentsDocument b) {
-            return Objects.equals(a.getGroups(), b.getGroups()) &&
-                    Objects.equals(a.getLinks(), b.getLinks());
-
-        }
-
-        @Override
-        protected int doHash(EnvironmentsDocument environments_Document) {
-            return Objects.hash(environments_Document.getGroups(), environments_Document.getLinks());
-        }
-    };
-
-    private Equivalence<EnvironmentDocument> environment_DocumentEquivalence = new Equivalence<EnvironmentDocument>() {
-        @Override
-        protected boolean doEquivalent(EnvironmentDocument a, EnvironmentDocument b) {
-            return Objects.equals(a.getGroups(), b.getGroups()) &&
-                    Objects.equals(a.getLinks(), b.getLinks());
-
-        }
-
-        @Override
-        protected int doHash(EnvironmentDocument environmentsDocument) {
-            return Objects.hash(environmentsDocument.getGroups(), environmentsDocument.getLinks());
-        }
-    };
-
 
     private RegisteredService.Builder service() {
         return RegisteredService.newBuilder()
