@@ -111,7 +111,7 @@ public class TriggerService implements DiscoveryListener {
                 return new JobTrigger(jobDefinition, triggerFor(jobDefinition), runnableFor(jobDefinition));
             } catch (final Exception e) {
                 final Runnable failingJobRunnable = () -> {
-                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage(e.getMessage()), emptyMessage(), jobDefinition));
+                    lastResults.addFirst(new TriggerResult(nextId(), fromMessage(e.getMessage()), emptyMessage(), jobDefinition));
                 };
                 return new JobTrigger(jobDefinition, periodicTrigger(of(10, MINUTES)), failingJobRunnable);
             }
