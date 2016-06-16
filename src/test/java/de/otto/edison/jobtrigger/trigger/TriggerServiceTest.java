@@ -109,6 +109,32 @@ public class TriggerServiceTest {
     }
 
     @Test
+    public void shouldNotFailIfSingleCronExpressionIsBroken() {
+        JobDefinition fixedDelayDefinition = new JobDefinitionBuilder().setFixedDelay(Optional.of(Duration.ofDays(2))).createJobDefinition();
+        JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
+        JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
+        when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, brokenCronDefinition, noDelayDefinition));
+        Runnable expectedRunnable = () -> {};
+        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class))).thenReturn(expectedRunnable);
+
+        testee.startTriggering();
+
+        verify(scheduler).updateTriggers(listArgumentCaptor.capture());
+        assertThat(listArgumentCaptor.getValue(), hasSize(2));
+    }
+
+    @Test
+    public void shouldThrowExceptionDuringexecutionIfCronExpressionIsBroken() {
+        JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
+        when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(brokenCronDefinition));
+
+        testee.startTriggering();
+        verify(scheduler).updateTriggers(listArgumentCaptor.capture());
+        listArgumentCaptor.getValue().get(0).getRunnable().run();
+        assertThat(testee.getLastResults().get(0).failed(), is(true));
+    }
+
+    @Test
     public void shouldAddSuccessfulResponseAsLastResult() throws Exception {
         Response responseMock = mock(Response.class);
         JobDefinition jobDefinition = mock(JobDefinition.class);

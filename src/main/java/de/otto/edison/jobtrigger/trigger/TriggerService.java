@@ -20,12 +20,15 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import static de.otto.edison.jobtrigger.trigger.TriggerRunnables.httpTriggerRunnable;
 import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromHttpStatus;
 import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromMessage;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
 import static java.lang.String.valueOf;
+import static java.time.Duration.of;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -75,7 +78,7 @@ public class TriggerService implements DiscoveryListener {
         scheduler.updateTriggers(jobDefinitions
                 .stream()
                 .filter(jobDefinition -> jobDefinition.getFixedDelay().isPresent() || jobDefinition.getCron().isPresent())
-                .map(def -> new JobTrigger(def, triggerFor(def), runnableFor(def)))
+                .map(toJobTrigger())
                 .collect(toList()));
         isStarted.set(true);
     }
@@ -100,6 +103,19 @@ public class TriggerService implements DiscoveryListener {
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
         return httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition));
+    }
+
+    private Function<JobDefinition, JobTrigger> toJobTrigger() {
+        return jobDefinition -> {
+            try {
+                return new JobTrigger(jobDefinition, triggerFor(jobDefinition), runnableFor(jobDefinition));
+            } catch (final Exception e) {
+                final Runnable failingJobRunnable = () -> {
+                    lastResult.addFirst(new TriggerResult(nextId(), fromMessage(e.getMessage()), emptyMessage(), jobDefinition));
+                };
+                return new JobTrigger(jobDefinition, periodicTrigger(of(10, MINUTES)), failingJobRunnable);
+            }
+        };
     }
 
     private Optional<String> emptyMessage() {
