@@ -41,13 +41,13 @@ public class JobScheduler {
     }
 
 	private void startTrigger(JobTrigger jobTrigger) {
-        LOG.info("Start JobTrigger " + jobTrigger);
+        LOG.info("Start JobTrigger " + jobTrigger.getDefinition());
 		ScheduledFuture<?> task = scheduler.schedule(jobTrigger.getRunnable(), jobTrigger.getTrigger());
 		taskMap.put(jobTrigger, task);
 	}
 
 	private void stopTrigger(JobTrigger jobTrigger) {
-        LOG.info("Stop JobTrigger " + jobTrigger);
+        LOG.info("Stop JobTrigger " + jobTrigger.getDefinition());
 		taskMap.get(jobTrigger).cancel(false);
 		taskMap.remove(jobTrigger);
 	}
