@@ -2,6 +2,9 @@ package de.otto.edison.jobtrigger.discovery;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
 import com.google.gson.Gson;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
@@ -63,6 +66,8 @@ public class DiscoveryService {
         final ImmutableList<JobDefinition> discoveryResult = discover();
         if (discoveryResult.size() != jobDefinitions.size() || !discoveryResult.containsAll(jobDefinitions)) {
             LOG.info("Discovered changes in job definitions. Old: " + jobDefinitions + " New: " + discoveryResult);
+            LOG.info("Discovered changes in job definitions. Old size: " + jobDefinitions.size() + " New size: " + discoveryResult.size());
+            LOG.info("Discovered changes in job definitions. Diff: " + Sets.difference(ImmutableSet.copyOf(jobDefinitions), ImmutableSet.copyOf(discoveryResult)));
             jobDefinitions = discoveryResult;
             listener.updatedJobDefinitions();
         } else {
