@@ -24,6 +24,8 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 
+import static com.google.common.collect.ImmutableSet.copyOf;
+import static com.google.common.collect.Sets.symmetricDifference;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -66,8 +68,7 @@ public class DiscoveryService {
         final ImmutableList<JobDefinition> discoveryResult = discover();
         if (discoveryResult.size() != jobDefinitions.size() || !discoveryResult.containsAll(jobDefinitions)) {
             LOG.info("Discovered changes in job definitions. Old: " + jobDefinitions + " New: " + discoveryResult);
-            LOG.info("Discovered changes in job definitions. Old size: " + jobDefinitions.size() + " New size: " + discoveryResult.size());
-            LOG.info("Discovered changes in job definitions. Diff: " + Sets.difference(ImmutableSet.copyOf(jobDefinitions), ImmutableSet.copyOf(discoveryResult)));
+            LOG.info("Discovered changes in job definitions. Diff: " + symmetricDifference(copyOf(jobDefinitions), copyOf(discoveryResult)));
             jobDefinitions = discoveryResult;
             listener.updatedJobDefinitions();
         } else {
