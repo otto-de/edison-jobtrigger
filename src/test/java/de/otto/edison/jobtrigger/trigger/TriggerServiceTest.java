@@ -75,12 +75,12 @@ public class TriggerServiceTest {
     }
 
     @Test
-    public void shouldStopTriggeringIfAlreadyStarted() {
+    public void shouldNotStopTriggeringIfAlreadyStarted() {
         testee.startTriggering();
 
         testee.startTriggering();
 
-        verify(scheduler).stopAllTriggers();
+        verify(scheduler, never()).stopAllTriggers();
     }
 
     @Test
