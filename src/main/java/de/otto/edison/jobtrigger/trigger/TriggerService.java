@@ -71,9 +71,6 @@ public class TriggerService implements DiscoveryListener {
     }
 
     public void startTriggering() {
-        if (isStarted()) {
-            stopTriggering();
-        }
         final List<JobDefinition> jobDefinitions = discoveryService.allJobDefinitions();
         scheduler.updateTriggers(jobDefinitions
                 .stream()
