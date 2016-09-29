@@ -35,6 +35,6 @@ public class JobSchedulerTest {
 
         testee.updateTriggers(ImmutableList.of(parameter, parameter));
 
-        verify(scheduler, times(2)).schedule(myRunnable, myTrigger);
+        verify(scheduler, times(1)).schedule(myRunnable, myTrigger);
     }
 }
