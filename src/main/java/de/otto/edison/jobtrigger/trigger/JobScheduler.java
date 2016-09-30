@@ -6,6 +6,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.slf4j.Logger;
@@ -13,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 /**
  *
@@ -34,9 +35,9 @@ public class JobScheduler {
     private static final Logger LOG = getLogger(JobScheduler.class);
 
     public void updateTriggers(final List<JobTrigger> jobTriggers) {
-    	SetView<JobTrigger> deletedTasks = Sets.difference(taskMap.keySet(), copyOf(jobTriggers));
-    	SetView<JobTrigger> newTasks = Sets.difference(copyOf(jobTriggers), taskMap.keySet());
-    	deletedTasks.forEach(e->stopTrigger(e)); 
+    	Set<JobTrigger> deletedTasks = ImmutableSet.copyOf(Sets.difference(taskMap.keySet(), copyOf(jobTriggers)));
+    	Set<JobTrigger> newTasks = ImmutableSet.copyOf(Sets.difference(copyOf(jobTriggers), taskMap.keySet()));
+   	deletedTasks.forEach(e->stopTrigger(e)); 
     	newTasks.forEach(e->startTrigger(e));
     }
 
