@@ -1,3 +1,8 @@
+## Release 1.1.x
+
+* Bugfix: configure scheduler pool size
+* Make size of scheduler pool configurable through edison.jobtrigger.scheduler.poolsize
+
 ## Release 1.1.1
 
 * Bugfix: discover for notTriggerableJobDefintions

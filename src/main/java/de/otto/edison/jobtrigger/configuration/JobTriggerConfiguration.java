@@ -1,6 +1,8 @@
 package de.otto.edison.jobtrigger.configuration;
 
 import com.ning.http.client.AsyncHttpClient;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -16,7 +18,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @EnableScheduling
 public class JobTriggerConfiguration {
 
-    public static final int POOL_SIZE = 10;
+    @Value("${edison.jobtrigger.scheduler.poolsize:10}")
+    public int poolsize = 10;
 
     @Bean
     public AsyncHttpClient asyncHttpClient() {
@@ -26,7 +29,7 @@ public class JobTriggerConfiguration {
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(POOL_SIZE);
+        taskScheduler.setPoolSize(poolsize);
         return taskScheduler;
     }
 
