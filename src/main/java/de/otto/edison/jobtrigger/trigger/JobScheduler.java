@@ -37,7 +37,8 @@ public class JobScheduler {
     public void updateTriggers(final List<JobTrigger> jobTriggers) {
     	Set<JobTrigger> deletedTasks = ImmutableSet.copyOf(Sets.difference(taskMap.keySet(), copyOf(jobTriggers)));
     	Set<JobTrigger> newTasks = ImmutableSet.copyOf(Sets.difference(copyOf(jobTriggers), taskMap.keySet()));
-   	deletedTasks.forEach(e->stopTrigger(e)); 
+    	
+    	deletedTasks.forEach(e->stopTrigger(e)); 
     	newTasks.forEach(e->startTrigger(e));
     }
 

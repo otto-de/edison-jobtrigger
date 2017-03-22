@@ -2,6 +2,7 @@
 
 * Bugfix: configure scheduler pool size
 * Make size of scheduler pool configurable through edison.jobtrigger.scheduler.poolsize
+* Updated to edison-microservice 1.0.0
 
 ## Release 1.1.1
 

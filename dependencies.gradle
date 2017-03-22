@@ -1,14 +1,14 @@
-ext.edisonrelease = "0.70.0"
+ext.edisonrelease = "1.0.0.RELEASE"
+ext.springBootVersion = "1.4.2.RELEASE"
+ext.springVersion = "4.3.4.RELEASE"
 ext.libraries = [
         edison: [
-                "de.otto.edison:edison-health:"+edisonrelease,
-                "de.otto.edison:edison-status:"+edisonrelease,
-                "de.otto.edison:edison-metrics:"+edisonrelease
+                "de.otto.edison:edison-core:"+edisonrelease
         ],
         bootstrap:
                 "org.webjars:bootstrap:3.3.6",
         guava:
-                "com.google.guava:guava:18.0",
+                "com.google.guava:guava:20.0",
         logging: [
                 "ch.qos.logback:logback-core:1.0.13",
                 "ch.qos.logback:logback-classic:1.0.13",
@@ -18,7 +18,7 @@ ext.libraries = [
         gson:
                 "com.google.code.gson:gson:2.2.4",
         asyncHttp:
-                "com.ning:async-http-client:1.8.3",
+                "com.ning:async-http-client:1.9.31",
         test: [
                 "junit:junit:4.12",
                 "org.mockito:mockito-core:1.10.8",
@@ -26,10 +26,12 @@ ext.libraries = [
                 "org.powermock:powermock-api-mockito:1.6.4",
                 "org.hamcrest:hamcrest-core:1.3",
                 "org.hamcrest:hamcrest-library:1.3",
-                "org.springframework:spring-test:4.2.3.RELEASE"
+                "org.springframework:spring-test:" + ext.springVersion,
+                "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
+                "de.otto.edison:edison-testsupport:" + edisonrelease
 
         ],
         jetty: [
-                "org.springframework.boot:spring-boot-starter-jetty:1.3.6.RELEASE"
+                "org.springframework.boot:spring-boot-starter-jetty:" + ext.springBootVersion
         ]
 ]
