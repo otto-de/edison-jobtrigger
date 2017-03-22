@@ -10,10 +10,10 @@ ext.libraries = [
         guava:
                 "com.google.guava:guava:20.0",
         logging: [
-                "ch.qos.logback:logback-core:1.0.13",
-                "ch.qos.logback:logback-classic:1.0.13",
+                "ch.qos.logback:logback-core:1.1.6",
+                "ch.qos.logback:logback-classic:1.1.6",
                 "net.logstash.logback:logstash-logback-encoder:3.5",
-                "com.github.danielwegener:logback-kafka-appender:0.0.2"
+                "com.github.danielwegener:logback-kafka-appender:0.0.4"
         ],
         gson:
                 "com.google.code.gson:gson:2.2.4",
