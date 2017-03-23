@@ -97,7 +97,7 @@ public class DiscoveryService {
                         if (response.getStatusCode()<300) {
                             result.addAll(jobDefinitionsFrom(service, response));
                         } else {
-                            LOG.info("No definitions found. Status=" + response.getStatusCode());
+                            LOG.info("No definitions found for {}. Status={}", service.getService(), response.getStatusCode());
                         }
                     } catch (final Exception e) {
                         LOG.warn("Did not get a response from {}: {}", jobDefinitionsUrl, e.getMessage());
