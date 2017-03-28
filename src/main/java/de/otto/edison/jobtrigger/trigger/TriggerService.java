@@ -2,12 +2,13 @@ package de.otto.edison.jobtrigger.trigger;
 
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
+import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @since 05.09.15
  */
 @Service
+@EnableConfigurationProperties(JobTriggerProperties.class)
 public class TriggerService implements DiscoveryListener {
 
     private static final Logger LOG = getLogger(TriggerService.class);
@@ -58,11 +60,11 @@ public class TriggerService implements DiscoveryListener {
 
 
     @Autowired
-    public TriggerService(DiscoveryService discoveryService, JobScheduler scheduler, AsyncHttpClient httpClient, @Value("${edison.jobtrigger.jobresults.max:1000}") int maxJobResults) {
+    public TriggerService(DiscoveryService discoveryService, JobScheduler scheduler, AsyncHttpClient httpClient, JobTriggerProperties jobTriggerProperties) {
         this.discoveryService = discoveryService;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
-        this.maxJobResults = maxJobResults;
+        this.maxJobResults = jobTriggerProperties.getJobresults().getMax();
     }
 
     @PostConstruct

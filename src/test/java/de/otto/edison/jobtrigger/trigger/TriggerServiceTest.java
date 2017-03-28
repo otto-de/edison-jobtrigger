@@ -4,6 +4,7 @@ import com.google.common.base.Equivalence;
 import com.google.common.collect.ImmutableList;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
+import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.definition.JobDefinitionBuilder;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -53,7 +53,6 @@ public class TriggerServiceTest {
     @Mock
     private AsyncHttpClient httpClient;
 
-    @InjectMocks
     private TriggerService testee;
 
     @Captor
@@ -62,6 +61,7 @@ public class TriggerServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties());
         reset(discoveryService, scheduler, httpClient);
         testee.postConstruct();
         PowerMockito.mockStatic(TriggerRunnables.class);

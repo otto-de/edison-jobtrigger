@@ -1,0 +1,18 @@
+application:
+    path: ${base.url}${server.context-path}
+base:
+    url: http://localhost:8086
+edison:
+    gracefulshutdown:
+        enabled: false
+    status:
+        redirect-internal:
+            enabled: true
+management:
+    context-path: /internal
+server:
+    context-path: /jobtrigger
+    port: 8086
+spring:
+    application:
+        name: jobtrigger
