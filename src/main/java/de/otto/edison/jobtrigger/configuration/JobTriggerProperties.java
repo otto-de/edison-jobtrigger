@@ -16,12 +16,24 @@ public class JobTriggerProperties {
     @Valid
     private Scheduler scheduler = new Scheduler();
 
+    @Valid
+    private Security security = new Security();
+
+
     public Jobresults getJobresults() {
         return jobresults;
     }
 
     public void setJobresults(Jobresults jobresults) {
         this.jobresults = jobresults;
+    }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
     }
 
     public Scheduler getScheduler() {
@@ -57,6 +69,28 @@ public class JobTriggerProperties {
 
         public void setPoolsize(int poolsize) {
             this.poolsize = poolsize;
+        }
+    }
+
+    public static class Security {
+        private String basicAuthUser;
+
+        private String basicAuthPasswd;
+
+        public String getBasicAuthUser() {
+            return basicAuthUser;
+        }
+
+        public String getBasicAuthPasswd() {
+            return basicAuthPasswd;
+        }
+
+        public void setBasicAuthUser(String basicAuthUser) {
+            this.basicAuthUser = basicAuthUser;
+        }
+
+        public void setBasicAuthPasswd(String basicAuthPasswd) {
+            this.basicAuthPasswd = basicAuthPasswd;
         }
     }
 

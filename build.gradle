@@ -18,9 +18,9 @@ buildscript {
     }
 }
 
-archivesBaseName='edison-jobtrigger'
+archivesBaseName = 'edison-jobtrigger'
 group = 'de.otto.edison'
-version = '2.0.0'
+version = '2.1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -58,14 +58,14 @@ test {
 }
 
 eclipse {
-  classpath {
-    //customizing the classes output directory:
-    defaultOutputDir = file('build/bin')
+    classpath {
+        //customizing the classes output directory:
+        defaultOutputDir = file('build/bin')
 
-    //default settings for downloading sources and Javadoc:
-    downloadSources = true
-    downloadJavadoc = false
-  }
+        //default settings for downloading sources and Javadoc:
+        downloadSources = true
+        downloadJavadoc = false
+    }
 }
 
 tasks.processResources << {

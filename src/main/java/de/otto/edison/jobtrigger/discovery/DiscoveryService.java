@@ -2,13 +2,11 @@ package de.otto.edison.jobtrigger.discovery;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-
 import com.google.gson.Gson;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
@@ -26,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Sets.symmetricDifference;
+import static de.otto.edison.jobtrigger.security.BasicAuthEncoder.AUTHORIZATION_HEADER;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -48,11 +47,14 @@ public class DiscoveryService {
     private AsyncHttpClient httpClient;
     @Autowired
     private Registry serviceRegistry;
+    @Autowired
+    private BasicAuthEncoder basicAuthEncoder;
 
     private volatile DiscoveryListener listener;
     private volatile ImmutableList<JobDefinition> jobDefinitions = ImmutableList.of();
 
-    public DiscoveryService() {}
+    public DiscoveryService() {
+    }
 
     @PostConstruct
     public void postConstruct() {
@@ -81,20 +83,23 @@ public class DiscoveryService {
         return jobDefinitions;
     }
 
-    @VisibleForTesting
-    ImmutableList<JobDefinition> discover() {
+    private ImmutableList<JobDefinition> discover() {
         final List<JobDefinition> result = new CopyOnWriteArrayList<>();
         serviceRegistry.findServices()
                 .parallelStream()
-                .forEach(service-> {
+                .forEach(service -> {
                     final String jobDefinitionsUrl = service.getHref() + "/internal/jobdefinitions";
                     try {
                         LOG.info("Trying to find job definitions at " + jobDefinitionsUrl);
-                        final Response response = httpClient
-                                .prepareGet(jobDefinitionsUrl)
+                        final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
+                                .prepareGet(jobDefinitionsUrl);
+                        basicAuthEncoder.getEncodedCredentials().ifPresent(encodedCredentials ->
+                                boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
+                        );
+                        final Response response = boundRequestBuilder
                                 .setHeader("Accept", "application/json")
                                 .execute().get();
-                        if (response.getStatusCode()<300) {
+                        if (response.getStatusCode() < 300) {
                             result.addAll(jobDefinitionsFrom(service, response));
                         } else {
                             LOG.info("No definitions found for {}. Status={}", service.getService(), response.getStatusCode());
@@ -121,14 +126,14 @@ public class DiscoveryService {
             final List<JobDefinition> jobDefinitions = new CopyOnWriteArrayList<>();
             jobDefinitionUrls
                     .stream()
-                    .forEach(definitionUrl->{
+                    .forEach(definitionUrl -> {
                         try {
                             LOG.info("Getting job definition from " + definitionUrl);
                             final Response response = httpClient
                                     .prepareGet(definitionUrl)
                                     .setHeader("Accept", "application/json")
                                     .execute().get();
-                            if (response.getStatusCode()<300) {
+                            if (response.getStatusCode() < 300) {
                                 jobDefinitions.add(jobDefinitionFrom(definitionUrl, service, response));
                             } else {
                                 LOG.info("Failed to get job definition with " + response.getStatusCode());

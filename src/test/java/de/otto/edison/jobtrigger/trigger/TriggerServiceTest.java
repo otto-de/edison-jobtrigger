@@ -8,6 +8,7 @@ import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.definition.JobDefinitionBuilder;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
+import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,9 @@ public class TriggerServiceTest {
     @Mock
     private AsyncHttpClient httpClient;
 
+    @Mock
+    private BasicAuthEncoder basicAuthEncoder;
+
     private TriggerService testee;
 
     @Captor
@@ -61,7 +65,7 @@ public class TriggerServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties());
+        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthEncoder);
         reset(discoveryService, scheduler, httpClient);
         testee.postConstruct();
         PowerMockito.mockStatic(TriggerRunnables.class);
@@ -85,37 +89,39 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldUpdateTriggersForAllJobDefinitions() {
-        JobDefinition fixedDelayDefinition = new JobDefinitionBuilder().setFixedDelay(Optional.of(Duration.ofDays(2))).createJobDefinition();
-        JobDefinition cronDefinition = new JobDefinitionBuilder().setCron(Optional.of("* * * * * *")).createJobDefinition();
-        JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
+        final JobDefinition fixedDelayDefinition = new JobDefinitionBuilder().setFixedDelay(Optional.of(Duration.ofDays(2))).createJobDefinition();
+        final JobDefinition cronDefinition = new JobDefinitionBuilder().setCron(Optional.of("* * * * * *")).createJobDefinition();
+        final JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, cronDefinition, noDelayDefinition));
-        Runnable expectedRunnable = () -> {};
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class))).thenReturn(expectedRunnable);
+        final Runnable expectedRunnable = () -> {
+        };
+        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthEncoder.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 
         verify(scheduler).updateTriggers(listArgumentCaptor.capture());
         assertJobTriggerEquality(listArgumentCaptor.getValue(),
-        ImmutableList.of(
-                new JobTrigger(
-                        fixedDelayDefinition,
-                        periodicTrigger(fixedDelayDefinition.getFixedDelay().get()),
-                        expectedRunnable),
-                new JobTrigger(
-                        cronDefinition,
-                        cronTrigger(cronDefinition.getCron().get()),
-                        expectedRunnable)
-        ));
+                ImmutableList.of(
+                        new JobTrigger(
+                                fixedDelayDefinition,
+                                periodicTrigger(fixedDelayDefinition.getFixedDelay().get()),
+                                expectedRunnable),
+                        new JobTrigger(
+                                cronDefinition,
+                                cronTrigger(cronDefinition.getCron().get()),
+                                expectedRunnable)
+                ));
     }
 
     @Test
     public void shouldNotFailIfSingleCronExpressionIsBroken() {
-        JobDefinition fixedDelayDefinition = new JobDefinitionBuilder().setFixedDelay(Optional.of(Duration.ofDays(2))).createJobDefinition();
-        JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
-        JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
+        final JobDefinition fixedDelayDefinition = new JobDefinitionBuilder().setFixedDelay(Optional.of(Duration.ofDays(2))).createJobDefinition();
+        final JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
+        final JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, brokenCronDefinition, noDelayDefinition));
-        Runnable expectedRunnable = () -> {};
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class))).thenReturn(expectedRunnable);
+        final Runnable expectedRunnable = () -> {
+        };
+        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthEncoder.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 
@@ -125,7 +131,7 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldThrowExceptionDuringexecutionIfCronExpressionIsBroken() {
-        JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
+        final JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(brokenCronDefinition));
 
         testee.startTriggering();
@@ -136,15 +142,15 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldAddSuccessfulResponseAsLastResult() throws Exception {
-        Response responseMock = mock(Response.class);
-        JobDefinition jobDefinition = mock(JobDefinition.class);
-        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+        final Response responseMock = mock(Response.class);
+        final JobDefinition jobDefinition = mock(JobDefinition.class);
+        final TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
 
         when(responseMock.getStatusCode()).thenReturn(200);
 
         responseConsumer.consume(responseMock);
 
-        TriggerResult triggerResult = testee.getLastResults().get(0);
+        final TriggerResult triggerResult = testee.getLastResults().get(0);
         assertThat(testee.getLastResults(), hasSize(1));
         assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
         assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.OK));
@@ -152,10 +158,10 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldRemoveLastResultsIfMoreThanMaxResults() throws Exception {
-        for(int i = 0; i < testee.getMaxJobResults() + 10; i++) {
-            Response responseMock = mock(Response.class);
-            JobDefinition jobDefinition = mock(JobDefinition.class);
-            TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+        for (int i = 0; i < testee.getMaxJobResults() + 10; i++) {
+            final Response responseMock = mock(Response.class);
+            final JobDefinition jobDefinition = mock(JobDefinition.class);
+            final TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
 
             when(responseMock.getStatusCode()).thenReturn(200);
 
@@ -167,13 +173,13 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldAddThrowableAsLastResult() throws Exception {
-        Exception throwable = new Exception("some message");
-        JobDefinition jobDefinition = mock(JobDefinition.class);
-        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+        final Exception throwable = new Exception("some message");
+        final JobDefinition jobDefinition = mock(JobDefinition.class);
+        final TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
 
         responseConsumer.consume(throwable);
 
-        TriggerResult triggerResult = testee.getLastResults().get(0);
+        final TriggerResult triggerResult = testee.getLastResults().get(0);
         assertThat(testee.getLastResults(), hasSize(1));
         assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
         assertThat(triggerResult.getTriggerStatus().getMessage(), is("some message"));
@@ -182,33 +188,33 @@ public class TriggerServiceTest {
 
     @Test
     public void shouldAddConnectExceptionAsLastResult() throws Exception {
-        Exception throwable = new ConnectException("some connect exception");
-        JobDefinition jobDefinition = mock(JobDefinition.class);
-        TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
+        final Exception throwable = new ConnectException("some connect exception");
+        final JobDefinition jobDefinition = mock(JobDefinition.class);
+        final TriggerService.DefaultTriggerResponseConsumer responseConsumer = testee.new DefaultTriggerResponseConsumer(jobDefinition);
 
 
         responseConsumer.consume(throwable);
 
-        TriggerResult triggerResult = testee.getLastResults().get(0);
+        final TriggerResult triggerResult = testee.getLastResults().get(0);
         assertThat(testee.getLastResults(), hasSize(1));
         assertThat(triggerResult.getJobDefinition(), is(jobDefinition));
         assertThat(triggerResult.getTriggerStatus().getMessage(), is("Connection Refused"));
         assertThat(triggerResult.getTriggerStatus().getState(), is(TriggerStatus.State.FAILED));
     }
 
-    private void assertJobTriggerEquality(List<JobTrigger> actual, List<JobTrigger> expected) {
+    private void assertJobTriggerEquality(final List<JobTrigger> actual, final List<JobTrigger> expected) {
         assertThat(actual.size(), is(expected.size()));
-        Iterator<JobTrigger> actualTriggerIterator = actual.iterator();
-        Iterator<JobTrigger> expectedTriggerIterator = expected.iterator();
-        while(expectedTriggerIterator.hasNext()) {
+        final Iterator<JobTrigger> actualTriggerIterator = actual.iterator();
+        final Iterator<JobTrigger> expectedTriggerIterator = expected.iterator();
+        while (expectedTriggerIterator.hasNext()) {
             assertThat(jobTriggerEquivalence.equivalent(expectedTriggerIterator.next(), actualTriggerIterator.next()), is(true));
         }
     }
 
-    private Equivalence<JobTrigger> jobTriggerEquivalence = new Equivalence<JobTrigger>() {
+    private final Equivalence<JobTrigger> jobTriggerEquivalence = new Equivalence<JobTrigger>() {
         @Override
-        protected boolean doEquivalent(JobTrigger a, JobTrigger b) {
-            JobTrigger that = (JobTrigger) b;
+        protected boolean doEquivalent(final JobTrigger a, final JobTrigger b) {
+            final JobTrigger that = (JobTrigger) b;
 
             if (a.getDefinition() != null ? !a.getDefinition().equals(that.getDefinition()) : that.getDefinition() != null)
                 return false;
@@ -218,7 +224,7 @@ public class TriggerServiceTest {
         }
 
         @Override
-        protected int doHash(JobTrigger jobTrigger) {
+        protected int doHash(final JobTrigger jobTrigger) {
             int result = jobTrigger.getDefinition() != null ? jobTrigger.getDefinition().hashCode() : 0;
             result = 31 * result + (jobTrigger.getTrigger() != null ? jobTrigger.getTrigger().hashCode() : 0);
             result = 31 * result + (jobTrigger.getRunnable() != null ? jobTrigger.getRunnable().hashCode() : 0);

@@ -15,6 +15,9 @@ edison:
             max: 1000
         scheduler:
             poolsize: 10
+        security:
+            basicAuthUser: someUser
+            basicAuthPasswd: somePassword
     metrics:
         slf4j:
             logger: de.otto.edison.jobtrigger

@@ -1,3 +1,7 @@
+## Snapshot 2.1.0
+
+* Add LDAP-Authorization: New properties edison.jobtrigger.security.basicAuthUser and edison.jobtrigger.security.basicAuthPasswd
+
 ## Release 2.0.0
 
 * Updated to edison-microservice 1.0.0

@@ -6,6 +6,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.junit.Before;
@@ -45,6 +46,9 @@ public class DiscoveryServiceTest {
     @Mock
     private Registry serviceRegistry;
 
+    @Mock
+    private BasicAuthEncoder basicAuthEncoder;
+
     @Before
     public void setUp() throws Exception {
         reset(httpClient, serviceRegistry);
@@ -52,15 +56,15 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldConvertToJobDefinitions() throws IOException {
-        RegisteredService service = someService();
-        JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
+        final RegisteredService service = someService();
+        final JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
 
-        Response response = mock(Response.class);
+        final Response response = mock(Response.class);
 
         when(response.getResponseBody()).thenReturn(
                 new Gson().toJson(jobDefinitionRepresentation)
         );
-        JobDefinition jd = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
+        final JobDefinition jd = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
 
         assertThat(testee, is(not(nullValue())));
         assertThat(jd.getCron(), is(Optional.of("* * * * * *")));
@@ -78,13 +82,13 @@ public class DiscoveryServiceTest {
     @Ignore("Ignored until Validation is implemented")
     @Test
     public void shouldValidateResponseBody() throws IOException, ExecutionException, InterruptedException {
-        RegisteredService service = someService();
+        final RegisteredService service = someService();
 
-        Response response = mock(Response.class);
+        final Response response = mock(Response.class);
         when(response.getResponseBody()).thenReturn("");
         stubHttpResponse(response);
 
-        JobDefinition jobDefintion = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
+        final JobDefinition jobDefintion = testee.jobDefinitionFrom("someDefinitionUrl", service, response);
 
         assertThat(jobDefintion, is(not(nullValue())));
     }
@@ -93,6 +97,7 @@ public class DiscoveryServiceTest {
     public void shouldDiscoverJobDefinitionsURLsForEveryService() throws Exception {
         when(serviceRegistry.findServices())
                 .thenReturn(ImmutableList.of(someService(), someService()));
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
         stubHttpResponse(mock(Response.class));
 
         testee.rediscover();
@@ -101,15 +106,32 @@ public class DiscoveryServiceTest {
     }
 
     @Test
+    public void shouldUseLdapCredentialsForDiscoveryRequests() throws Exception {
+        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
+
+        when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.of("Basic someEncodedCreds"));
+        when(httpClient.prepareGet(null == null ? anyString() : null)).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
+        when(listenableFutureStub.get()).thenReturn(mock(Response.class));
+
+        testee.rediscover();
+
+        verify(requestBuilderStub).setHeader("Authorization", "Basic someEncodedCreds");
+    }
+
+    @Test
     public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
-        Response singleJobDefinitionResponse = mock(Response.class);
+        final Response singleJobDefinitionResponse = mock(Response.class);
         when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(someJobDefinitionRepresentation())
         );
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+        final List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient).prepareGet("someHref/myJobDefinitions");
         verify(httpClient).prepareGet("someOtherHref/myJobDefinitions");
@@ -119,7 +141,7 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldNotFetchSingleJobDefinitionWhenReceivingErrorResponse() throws Exception {
-        Response errorResponse = mock(Response.class);
+        final Response errorResponse = mock(Response.class);
         when(errorResponse.getStatusCode()).thenReturn(400);
         when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
@@ -132,10 +154,10 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldCatchIOExceptionOnResponseError() throws Exception {
-        Response errorThrowingResponse = mock(Response.class);
+        final Response errorThrowingResponse = mock(Response.class);
         when(errorThrowingResponse.getResponseBody()).thenThrow(new IOException("Expected Exception"));
 
-        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), errorThrowingResponse);
+        final List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), errorThrowingResponse);
 
         assertThat(jobDefinitions, hasSize(0));
     }
@@ -143,10 +165,10 @@ public class DiscoveryServiceTest {
     @Test
     @Ignore("Ignored until bug is fixed")
     public void shouldIgnoreNullValuesInJobDefinitionsList() throws Exception {
-        JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
+        final JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
         jobDefinitionRepresentation.setLinks(ImmutableList.of());
 
-        Response singleJobDefinitionResponse = mock(Response.class);
+        final Response singleJobDefinitionResponse = mock(Response.class);
 
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(jobDefinitionRepresentation)
@@ -154,7 +176,7 @@ public class DiscoveryServiceTest {
 
         stubHttpResponse(singleJobDefinitionResponse);
 
-        List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+        final List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         assertThat(jobDefinitions, hasSize(0));
     }
@@ -162,13 +184,14 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldCallListenerForAllServices() throws Exception {
         when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
 
-        Response serviceResponse = jobDefinitionLinksResponse();
+        final Response serviceResponse = jobDefinitionLinksResponse();
         when(serviceResponse.getStatusCode()).thenReturn(200);
 
         stubHttpResponse("someHref/internal/jobdefinitions", serviceResponse);
 
-        Response singleJobDefinitionResponse = mock(Response.class);
+        final Response singleJobDefinitionResponse = mock(Response.class);
         when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(someJobDefinitionRepresentation())
@@ -176,22 +199,22 @@ public class DiscoveryServiceTest {
         stubHttpResponse("someHref/myJobDefinitions", singleJobDefinitionResponse);
         stubHttpResponse("someOtherHref/myJobDefinitions", singleJobDefinitionResponse);
 
-        DiscoveryListener listenerMock = mock(DiscoveryListener.class);
+        final DiscoveryListener listenerMock = mock(DiscoveryListener.class);
         testee.register(listenerMock);
         testee.rediscover();
 
         verify(listenerMock).updatedJobDefinitions();
     }
 
-    private void stubHttpResponse(Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
+    private void stubHttpResponse(final Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
         stubHttpResponse(null, response);
     }
 
     // manual deep stubbing is necessary because PowerMock does not support deep stubbing automatically
     @SuppressWarnings("unchecked")
-    private void stubHttpResponse(String url, Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
-        AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
-        ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
+    private void stubHttpResponse(final String url, final Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
+        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
         when(httpClient.prepareGet(url == null ? anyString() : url)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
         when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
@@ -199,12 +222,12 @@ public class DiscoveryServiceTest {
     }
 
     private Response jobDefinitionLinksResponse() throws IOException {
-        LinksRepresentation linksRepresentation = new LinksRepresentation();
+        final LinksRepresentation linksRepresentation = new LinksRepresentation();
         linksRepresentation.setLinks(ImmutableList.of(
                 link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someHref/myJobDefinitions", "someTitle"),
                 link(DiscoveryService.JOB_DEFINITION_LINK_RELATION_TYPE, "someOtherHref/myJobDefinitions", "someOtherTitle")));
 
-        Response jobDefinitionsResponse = mock(Response.class);
+        final Response jobDefinitionsResponse = mock(Response.class);
         when(jobDefinitionsResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(linksRepresentation)
         );
@@ -212,7 +235,7 @@ public class DiscoveryServiceTest {
     }
 
     private JobDefinitionRepresentation someJobDefinitionRepresentation() {
-        JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
+        final JobDefinitionRepresentation jobDefinitionRepresentation = new JobDefinitionRepresentation();
         jobDefinitionRepresentation.setCron("* * * * * *");
         jobDefinitionRepresentation.setFixedDelay(12L);
         jobDefinitionRepresentation.setLinks(ImmutableList.of(link("http://github.com/otto-de/edison/link-relations/job/trigger", DEFAULT_TRIGGER_URL, "title")));
