@@ -125,6 +125,7 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
         final Response singleJobDefinitionResponse = mock(Response.class);
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
         when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(someJobDefinitionRepresentation())
@@ -140,8 +141,30 @@ public class DiscoveryServiceTest {
     }
 
     @Test
+    public void shouldFetchJobDefinitionsForAllJobsWithLdapCredentials() throws Exception {
+        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
+        final Response singleJobDefinitionResponse = mock(Response.class);
+
+        when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.of("Basic someEncodedCreds"));
+        when(httpClient.prepareGet(null == null ? anyString() : null)).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
+        when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
+        when(listenableFutureStub.get()).thenReturn(singleJobDefinitionResponse);
+        when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
+                new Gson().toJson(someJobDefinitionRepresentation())
+        );
+
+        testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
+
+        verify(requestBuilderStub, times(2)).setHeader("Authorization", "Basic someEncodedCreds");
+    }
+
+    @Test
     public void shouldNotFetchSingleJobDefinitionWhenReceivingErrorResponse() throws Exception {
         final Response errorResponse = mock(Response.class);
+        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
         when(errorResponse.getStatusCode()).thenReturn(400);
         when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
