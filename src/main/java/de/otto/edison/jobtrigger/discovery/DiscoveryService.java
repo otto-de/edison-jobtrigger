@@ -129,8 +129,12 @@ public class DiscoveryService {
                     .forEach(definitionUrl -> {
                         try {
                             LOG.info("Getting job definition from " + definitionUrl);
-                            final Response response = httpClient
-                                    .prepareGet(definitionUrl)
+                            final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
+                                    .prepareGet(definitionUrl);
+                            basicAuthEncoder.getEncodedCredentials().ifPresent(encodedCredentials ->
+                                    boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
+                            );
+                            final Response response = boundRequestBuilder
                                     .setHeader("Accept", "application/json")
                                     .execute().get();
                             if (response.getStatusCode() < 300) {
