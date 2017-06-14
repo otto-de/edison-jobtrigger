@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
+import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Sets.symmetricDifference;
-import static de.otto.edison.jobtrigger.security.BasicAuthEncoder.AUTHORIZATION_HEADER;
+import static de.otto.edison.jobtrigger.security.BasicAuthCredentials.AUTHORIZATION_HEADER;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -48,7 +48,7 @@ public class DiscoveryService {
     @Autowired
     private Registry serviceRegistry;
     @Autowired
-    private BasicAuthEncoder basicAuthEncoder;
+    private BasicAuthCredentials basicAuthCredentials;
 
     private volatile DiscoveryListener listener;
     private volatile ImmutableList<JobDefinition> jobDefinitions = ImmutableList.of();
@@ -93,7 +93,7 @@ public class DiscoveryService {
                         LOG.info("Trying to find job definitions at " + jobDefinitionsUrl);
                         final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
                                 .prepareGet(jobDefinitionsUrl);
-                        basicAuthEncoder.getEncodedCredentials().ifPresent(encodedCredentials ->
+                        basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
                                 boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
                         );
                         final Response response = boundRequestBuilder
@@ -131,7 +131,7 @@ public class DiscoveryService {
                             LOG.info("Getting job definition from " + definitionUrl);
                             final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
                                     .prepareGet(definitionUrl);
-                            basicAuthEncoder.getEncodedCredentials().ifPresent(encodedCredentials ->
+                            basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
                                     boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
                             );
                             final Response response = boundRequestBuilder

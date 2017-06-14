@@ -8,7 +8,7 @@ import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.definition.JobDefinitionBuilder;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
-import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
+import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public class TriggerServiceTest {
     private AsyncHttpClient httpClient;
 
     @Mock
-    private BasicAuthEncoder basicAuthEncoder;
+    private BasicAuthCredentials basicAuthCredentials;
 
     private TriggerService testee;
 
@@ -65,7 +65,7 @@ public class TriggerServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthEncoder);
+        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthCredentials);
         reset(discoveryService, scheduler, httpClient);
         testee.postConstruct();
         PowerMockito.mockStatic(TriggerRunnables.class);
@@ -95,7 +95,7 @@ public class TriggerServiceTest {
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, cronDefinition, noDelayDefinition));
         final Runnable expectedRunnable = () -> {
         };
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthEncoder.class))).thenReturn(expectedRunnable);
+        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 
@@ -121,7 +121,7 @@ public class TriggerServiceTest {
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, brokenCronDefinition, noDelayDefinition));
         final Runnable expectedRunnable = () -> {
         };
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthEncoder.class))).thenReturn(expectedRunnable);
+        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 

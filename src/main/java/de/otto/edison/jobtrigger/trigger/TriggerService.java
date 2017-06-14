@@ -6,7 +6,7 @@ import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
-import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
+import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,7 +54,7 @@ public class TriggerService implements DiscoveryListener {
     private final Deque<TriggerResult> lastResults = new ConcurrentLinkedDeque<>();
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
     private final AtomicLong currentIndex = new AtomicLong(0);
-    private BasicAuthEncoder basicAuthEncoder;
+    private BasicAuthCredentials basicAuthCredentials;
 
     TriggerService() {
         // FOR TESTING
@@ -66,12 +66,12 @@ public class TriggerService implements DiscoveryListener {
                           final JobScheduler scheduler,
                           final AsyncHttpClient httpClient,
                           final JobTriggerProperties jobTriggerProperties,
-                          final BasicAuthEncoder basicAuthEncoder) {
+                          final BasicAuthCredentials basicAuthCredentials) {
         this.discoveryService = discoveryService;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.maxJobResults = jobTriggerProperties.getJobresults().getMax();
-        this.basicAuthEncoder = basicAuthEncoder;
+        this.basicAuthCredentials = basicAuthCredentials;
     }
 
     @PostConstruct
@@ -108,7 +108,7 @@ public class TriggerService implements DiscoveryListener {
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
-        return httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition), basicAuthEncoder);
+        return httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition), basicAuthCredentials);
     }
 
     private Function<JobDefinition, JobTrigger> toJobTrigger() {

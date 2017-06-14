@@ -6,7 +6,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.security.BasicAuthEncoder;
+import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.junit.Before;
@@ -47,7 +47,7 @@ public class DiscoveryServiceTest {
     private Registry serviceRegistry;
 
     @Mock
-    private BasicAuthEncoder basicAuthEncoder;
+    private BasicAuthCredentials basicAuthCredentials;
 
     @Before
     public void setUp() throws Exception {
@@ -97,7 +97,7 @@ public class DiscoveryServiceTest {
     public void shouldDiscoverJobDefinitionsURLsForEveryService() throws Exception {
         when(serviceRegistry.findServices())
                 .thenReturn(ImmutableList.of(someService(), someService()));
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.empty());
         stubHttpResponse(mock(Response.class));
 
         testee.rediscover();
@@ -111,7 +111,7 @@ public class DiscoveryServiceTest {
         final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
 
         when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.of("Basic someEncodedCreds"));
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.of("Basic someEncodedCreds"));
         when(httpClient.prepareGet(null == null ? anyString() : null)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
         when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
@@ -125,7 +125,7 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldFetchJobDefinitionsForAllJobs() throws Exception {
         final Response singleJobDefinitionResponse = mock(Response.class);
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.empty());
         when(singleJobDefinitionResponse.getStatusCode()).thenReturn(200);
         when(singleJobDefinitionResponse.getResponseBody()).thenReturn(
                 new Gson().toJson(someJobDefinitionRepresentation())
@@ -147,7 +147,7 @@ public class DiscoveryServiceTest {
         final Response singleJobDefinitionResponse = mock(Response.class);
 
         when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.of("Basic someEncodedCreds"));
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.of("Basic someEncodedCreds"));
         when(httpClient.prepareGet(null == null ? anyString() : null)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
         when(requestBuilderStub.execute()).thenReturn(listenableFutureStub);
@@ -164,7 +164,7 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldNotFetchSingleJobDefinitionWhenReceivingErrorResponse() throws Exception {
         final Response errorResponse = mock(Response.class);
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.empty());
         when(errorResponse.getStatusCode()).thenReturn(400);
         when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
@@ -207,7 +207,7 @@ public class DiscoveryServiceTest {
     @Test
     public void shouldCallListenerForAllServices() throws Exception {
         when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
-        when(basicAuthEncoder.getEncodedCredentials()).thenReturn(Optional.empty());
+        when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.empty());
 
         final Response serviceResponse = jobDefinitionLinksResponse();
         when(serviceResponse.getStatusCode()).thenReturn(200);
