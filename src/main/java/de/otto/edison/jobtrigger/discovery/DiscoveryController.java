@@ -29,8 +29,12 @@ import static java.util.stream.Collectors.toList;
 @Controller
 public class DiscoveryController {
 
+    private final DiscoveryService discoveryService;
+
     @Autowired
-    private DiscoveryService discoveryService;
+    public DiscoveryController(final DiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
 
     @RequestMapping(value = "/discover", method = RequestMethod.POST)
     public String startDiscovery() {

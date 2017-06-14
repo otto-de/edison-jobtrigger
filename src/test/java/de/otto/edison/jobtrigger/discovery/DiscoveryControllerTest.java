@@ -36,7 +36,6 @@ public class DiscoveryControllerTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setViewResolvers(TestViewResolverBuilder.createViewResolver()).build();
     }

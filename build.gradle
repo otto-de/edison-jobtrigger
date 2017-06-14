@@ -1,8 +1,9 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'project-report'
+apply plugin: 'com.github.ben-manes.versions'
 
 apply from: 'dependencies.gradle'
 
@@ -14,7 +15,8 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
     }
 }
 
@@ -68,15 +70,17 @@ eclipse {
     }
 }
 
-tasks.processResources << {
-    def resourcesDir = project.sourceSets.main.output.resourcesDir
-    resourcesDir.mkdirs()
+tasks.processResources {
+    doLast {
+        def resourcesDir = project.sourceSets.main.output.resourcesDir
+        resourcesDir.mkdirs()
 
-    def versionProperties = new File(resourcesDir, "version.properties")
-    if (versionProperties) {
-        def gitVersion = runCommand("git log -n 1 --format=format:%H")
-        def fullVersion = fullyQualifiedVersion()
-        versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}" + "\nedison.status.vcs.url-template = https://github.com/otto-de/edison-jobtrigger"
+        def versionProperties = new File(resourcesDir, "version.properties")
+        if (versionProperties) {
+            def gitVersion = runCommand("git log -n 1 --format=format:%H")
+            def fullVersion = fullyQualifiedVersion()
+            versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}" + "\nedison.status.vcs.url-template = https://github.com/otto-de/edison-jobtrigger"
+        }
     }
 }
 
