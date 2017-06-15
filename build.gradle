@@ -50,6 +50,7 @@ dependencies {
     compile libraries.jetty
     compile libraries.asyncHttp
     compile libraries.gson
+    compile libraries.spring
 
     testCompile libraries.test
 }

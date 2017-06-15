@@ -5,6 +5,7 @@ import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.vault.core.VaultOperations;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 @EnableConfigurationProperties(JobTriggerProperties.class)
 public class BasicAuthCredentials {
 
+    private static final String VAULT_PREFIX = "VAULT ";
     public static String AUTHORIZATION_HEADER = "Authorization";
 
     private static final String BASIC_PREFIX = "Basic ";
@@ -20,10 +22,16 @@ public class BasicAuthCredentials {
     private final String basicAuthPasswd;
 
     @Autowired
-    public BasicAuthCredentials(final JobTriggerProperties jobTriggerProperties) {
+    public BasicAuthCredentials(final JobTriggerProperties jobTriggerProperties, final VaultOperations vaultOperations) {
         basicAuthUser = jobTriggerProperties.getSecurity().getBasicAuthUser();
-        basicAuthPasswd = jobTriggerProperties.getSecurity().getBasicAuthPasswd();
+        String passwd = jobTriggerProperties.getSecurity().getBasicAuthPasswd();
 
+        if(passwd != null && passwd.startsWith(VAULT_PREFIX)) {
+            String vaultPath = passwd.substring(VAULT_PREFIX.length());
+            basicAuthPasswd = vaultOperations.read(vaultPath).getData().get("value").toString();
+        } else {
+            basicAuthPasswd = passwd;
+        }
     }
 
     public Optional<String> base64Encoded() {
