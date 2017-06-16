@@ -1,3 +1,18 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
+    }
+}
+
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
@@ -9,16 +24,6 @@ apply from: 'dependencies.gradle'
 
 defaultTasks 'clean', 'check'
 
-buildscript {
-    repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
-        mavenLocal()
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
-    }
-}
 
 archivesBaseName = 'edison-jobtrigger'
 group = 'de.otto.edison'
@@ -31,9 +36,6 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
-plugins {
-    id "com.gorylenko.gradle-git-properties" version "1.4.17"
-}
 
 configurations.all {
     // check for updates every build
