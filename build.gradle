@@ -31,6 +31,10 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+
 configurations.all {
     // check for updates every build
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
