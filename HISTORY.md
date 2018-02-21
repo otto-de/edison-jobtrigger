@@ -1,6 +1,7 @@
 ## Snapshot 2.1.0
 
 * Add LDAP-Authorization: New properties edison.jobtrigger.security.basicAuthUser and edison.jobtrigger.security.basicAuthPasswd
+* Add possibility to set values for version.properties via environment variables instead of git information
 
 ## Release 2.0.0
 

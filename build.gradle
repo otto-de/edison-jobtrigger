@@ -81,30 +81,16 @@ eclipse {
     }
 }
 
-tasks.processResources {
-    doLast {
-        def resourcesDir = project.sourceSets.main.output.resourcesDir
-        resourcesDir.mkdirs()
+tasks.processResources.doLast {
+    def resourcesDir = project.sourceSets.main.output.resourcesDir
+    resourcesDir.mkdirs()
 
-        def versionProperties = new File(resourcesDir, "version.properties")
-        if (versionProperties) {
-            def gitVersion = runCommand("git log -n 1 --format=format:%H")
-            def fullVersion = fullyQualifiedVersion()
-            versionProperties.text = "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}" + "\nedison.status.vcs.url-template = https://github.com/otto-de/edison-jobtrigger"
-        }
+    def versionProperties = new File(resourcesDir, "version.properties")
+    if (versionProperties) {
+        def commit = getCommitHash()
+        def version = getVersion()
+        versionProperties.text = "\nedison.status.vcs.commit = ${commit}\nedison.status.vcs.version = ${version}" + "\nedison.status.vcs.url-template = https://github.com/otto-de/edison-jobtrigger"
     }
-}
-
-def String fullyQualifiedVersion() {
-    def env = System.getenv()
-    def versionFromEnv = env.VERSION
-    def version
-    if (versionFromEnv) {
-        version = versionFromEnv
-    } else {
-        version = '0.1-localbuild'
-    }
-    return version
 }
 
 def String runCommand(def command) {
@@ -120,5 +106,12 @@ def String runCommand(def command) {
     out.toString().trim()
 }
 
+def String getVersion() {
+    def env = System.getenv()
+    return env.VERSION ? env.VERSION : '0.1-localbuild'
+}
 
-
+def String getCommitHash() {
+    def env = System.getenv()
+    return env.COMMIT ? env.COMMIT : runCommand("git log -n 1 --format=format:%H")
+}
