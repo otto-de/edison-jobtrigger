@@ -5,7 +5,6 @@ import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.vault.core.VaultOperations;
 
 import java.util.Optional;
 
@@ -22,13 +21,13 @@ public class BasicAuthCredentials {
     private final String basicAuthPasswd;
 
     @Autowired
-    public BasicAuthCredentials(final JobTriggerProperties jobTriggerProperties, final VaultOperations vaultOperations) {
+    public BasicAuthCredentials(final JobTriggerProperties jobTriggerProperties) {
         basicAuthUser = jobTriggerProperties.getSecurity().getBasicAuthUser();
         String passwd = jobTriggerProperties.getSecurity().getBasicAuthPasswd();
 
         if(passwd != null && passwd.startsWith(VAULT_PREFIX)) {
             String vaultPath = passwd.substring(VAULT_PREFIX.length());
-            basicAuthPasswd = vaultOperations.read(vaultPath).getData().get("value").toString();
+            basicAuthPasswd = vaultPath;
         } else {
             basicAuthPasswd = passwd;
         }

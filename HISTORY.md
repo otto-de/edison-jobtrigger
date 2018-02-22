@@ -1,3 +1,7 @@
+## Branch AWS
+* Migrate to AWS
+* Store Passwords into AWS ParameterStore
+
 ## Snapshot 2.1.0
 
 * Add LDAP-Authorization: New properties edison.jobtrigger.security.basicAuthUser and edison.jobtrigger.security.basicAuthPasswd

@@ -54,13 +54,14 @@ configurations.all {
 
 dependencies {
     compile libraries.edison
+    compile libraries.spring
     compile libraries.bootstrap
     compile libraries.guava
     compile libraries.logging
     compile libraries.jetty
     compile libraries.asyncHttp
     compile libraries.gson
-    compile libraries.spring
+    compile libraries.aws
 
     testCompile libraries.test
 }

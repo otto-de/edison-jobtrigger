@@ -3,11 +3,36 @@ spring:
         name: jobtrigger
     jackson:
         serialization:
-            INDENT_OUTPUT: true
+        INDENT_OUTPUT: true
+    thymeleaf:
+        mode: HTML5
+
 server:
     context-path: /jobtrigger
     port: 8080
+
+aws:
+    profile:
+
+base:
+    url: https://${service.name}.${GROUP:develop}.${service.vertical}.cloud.otto.de
+
+togglz:
+    s3:
+        enabled: false
+        bucketName: someTogglzBucketName
+
 edison:
+    aws:
+        config:
+            s3:
+                enabled: false
+                bucketname: someBucketName
+            paramstore:
+                enabled: false
+                path: /${service.vertical}/${service.name}
+    ldap:
+        enabled: false
     gracefulshutdown:
         enabled: false
     jobtrigger:
@@ -18,20 +43,16 @@ edison:
         security:
             basicAuthUser: someUser
             basicAuthPasswd: somePassword
-    metrics:
-        slf4j:
-            logger: de.otto.edison.jobtrigger
     status:
-        redirect-internal:
-            enabled: true
+          redirect-internal:
+              enabled: true
+
 endpoints:
     metrics:
         filter:
             enabled: false
+
 management:
-    contextPath: /internal
-    health:
-        diskspace:
-            enabled: false
-
-
+    context-path: /internal
+    security:
+        enabled: false
