@@ -1,4 +1,4 @@
-ext.edisonrelease = "2.0.0-rc6"
+ext.edisonrelease = "2.0.0-rc7"
 ext.springBootVersion = "2.1.6.RELEASE"
 ext.springVersion = "5.1.8.RELEASE"
 ext.thymeleafVersion = "3.0.11.RELEASE"
@@ -31,8 +31,6 @@ ext.libraries = [
         test: [
                 "junit:junit:4.12",
                 "org.mockito:mockito-core:2.28.2",
-                "org.powermock:powermock-module-junit4:2.0.2",
-                "org.powermock:powermock-api-mockito2:2.0.2",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework:spring-test:" + ext.springVersion,
                 "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
