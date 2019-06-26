@@ -1,7 +1,8 @@
 package de.otto.edison.jobtrigger.security;
 
-import com.ning.http.util.Base64;
+import com.unboundid.util.Base64;
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
+import org.asynchttpclient.AsyncHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;

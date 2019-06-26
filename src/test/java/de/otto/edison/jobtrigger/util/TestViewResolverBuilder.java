@@ -1,8 +1,8 @@
 package de.otto.edison.jobtrigger.util;
 
 import org.springframework.web.servlet.ViewResolver;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 public class TestViewResolverBuilder {

@@ -2,23 +2,20 @@ package de.otto.edison.jobtrigger.trigger;
 
 import com.google.common.base.Equivalence;
 import com.google.common.collect.ImmutableList;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.definition.JobDefinitionBuilder;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +30,10 @@ import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@PrepareForTest(TriggerRunnables.class)
-@PowerMockIgnore("javax.management.*")
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class TriggerServiceTest {
 
     Logger log = LoggerFactory.getLogger(TriggerService.class);
@@ -57,18 +50,21 @@ public class TriggerServiceTest {
     @Mock
     private BasicAuthCredentials basicAuthCredentials;
 
+    @Mock
+    private TriggerRunnablesService triggerRunnablesService;
+
     private TriggerService testee;
 
     @Captor
     ArgumentCaptor<List<JobTrigger>> listArgumentCaptor;
 
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
-        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthCredentials);
+        testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthCredentials, triggerRunnablesService);
         reset(discoveryService, scheduler, httpClient);
         testee.postConstruct();
-        PowerMockito.mockStatic(TriggerRunnables.class);
     }
 
     @Test
@@ -95,7 +91,7 @@ public class TriggerServiceTest {
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, cronDefinition, noDelayDefinition));
         final Runnable expectedRunnable = () -> {
         };
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
+        when(triggerRunnablesService.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 
@@ -119,9 +115,6 @@ public class TriggerServiceTest {
         final JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
         final JobDefinition noDelayDefinition = new JobDefinitionBuilder().createJobDefinition();
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, brokenCronDefinition, noDelayDefinition));
-        final Runnable expectedRunnable = () -> {
-        };
-        when(TriggerRunnables.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 
@@ -130,7 +123,7 @@ public class TriggerServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringexecutionIfCronExpressionIsBroken() {
+    public void shouldThrowExceptionDuringExecutionIfCronExpressionIsBroken() {
         final JobDefinition brokenCronDefinition = new JobDefinitionBuilder().setCron(Optional.of("BÄM!")).createJobDefinition();
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(brokenCronDefinition));
 

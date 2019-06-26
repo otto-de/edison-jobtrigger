@@ -2,20 +2,21 @@ package de.otto.edison.jobtrigger.discovery;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.BoundRequestBuilder;
+import org.asynchttpclient.ListenableFuture;
+import org.asynchttpclient.Response;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -107,7 +108,7 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldUseLdapCredentialsForDiscoveryRequests() throws Exception {
-        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final BoundRequestBuilder requestBuilderStub = mock(BoundRequestBuilder.class);
         final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
 
         when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
@@ -142,11 +143,11 @@ public class DiscoveryServiceTest {
 
     @Test
     public void shouldFetchJobDefinitionsForAllJobsWithLdapCredentials() throws Exception {
-        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final BoundRequestBuilder requestBuilderStub = mock(BoundRequestBuilder.class);
         final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
         final Response singleJobDefinitionResponse = mock(Response.class);
 
-        when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
+//        when(serviceRegistry.findServices()).thenReturn(ImmutableList.of(someService()));
         when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.of("Basic someEncodedCreds"));
         when(httpClient.prepareGet(null == null ? anyString() : null)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);
@@ -166,23 +167,13 @@ public class DiscoveryServiceTest {
         final Response errorResponse = mock(Response.class);
         when(basicAuthCredentials.base64Encoded()).thenReturn(Optional.empty());
         when(errorResponse.getStatusCode()).thenReturn(400);
-        when(errorResponse.getResponseBody()).thenReturn("");
+//        when(errorResponse.getResponseBody()).thenReturn("");
         stubHttpResponse(errorResponse);
 
         testee.jobDefinitionsFrom(someService(), jobDefinitionLinksResponse());
 
         verify(httpClient, times(2)).prepareGet(anyString());
         verifyNoMoreInteractions(httpClient);
-    }
-
-    @Test
-    public void shouldCatchIOExceptionOnResponseError() throws Exception {
-        final Response errorThrowingResponse = mock(Response.class);
-        when(errorThrowingResponse.getResponseBody()).thenThrow(new IOException("Expected Exception"));
-
-        final List<JobDefinition> jobDefinitions = testee.jobDefinitionsFrom(someService(), errorThrowingResponse);
-
-        assertThat(jobDefinitions, hasSize(0));
     }
 
     @Test
@@ -236,7 +227,7 @@ public class DiscoveryServiceTest {
     // manual deep stubbing is necessary because PowerMock does not support deep stubbing automatically
     @SuppressWarnings("unchecked")
     private void stubHttpResponse(final String url, final Response response) throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
-        final AsyncHttpClient.BoundRequestBuilder requestBuilderStub = mock(AsyncHttpClient.BoundRequestBuilder.class);
+        final BoundRequestBuilder requestBuilderStub = mock(BoundRequestBuilder.class);
         final ListenableFuture<Response> listenableFutureStub = mock(ListenableFuture.class);
         when(httpClient.prepareGet(url == null ? anyString() : url)).thenReturn(requestBuilderStub);
         when(requestBuilderStub.setHeader(anyString(), anyString())).thenReturn(requestBuilderStub);

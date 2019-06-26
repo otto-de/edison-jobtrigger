@@ -1,6 +1,6 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import com.ning.http.client.Response;
+import org.asynchttpclient.Response;
 
 /**
  * @author Guido Steinacker

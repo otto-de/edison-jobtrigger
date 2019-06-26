@@ -3,13 +3,14 @@ package de.otto.edison.jobtrigger.discovery;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.BoundRequestBuilder;
+import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Sets.symmetricDifference;
 import static de.otto.edison.jobtrigger.security.BasicAuthCredentials.AUTHORIZATION_HEADER;
 import static java.time.Duration.ofSeconds;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -91,7 +91,7 @@ public class DiscoveryService {
                     final String jobDefinitionsUrl = service.getHref() + "/internal/jobdefinitions";
                     try {
                         LOG.info("Trying to find job definitions at " + jobDefinitionsUrl);
-                        final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
+                        final BoundRequestBuilder boundRequestBuilder = httpClient
                                 .prepareGet(jobDefinitionsUrl);
                         basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
                                 boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
@@ -113,45 +113,40 @@ public class DiscoveryService {
 
     @VisibleForTesting
     List<JobDefinition> jobDefinitionsFrom(final RegisteredService service, final Response jobDefinitionsResponse) {
-        try {
-            final LinksRepresentation document = new Gson()
-                    .fromJson(jobDefinitionsResponse.getResponseBody(), LinksRepresentation.class);
-            final List<String> jobDefinitionUrls = document.getLinks().stream()
-                    .filter(l -> l.rel.equals(JOB_DEFINITION_LINK_RELATION_TYPE))
-                    .map(l -> l.href)
-                    .collect(toList());
-            if (jobDefinitionUrls.isEmpty()) {
-                LOG.warn("Did not find any URLs with rel={}", JOB_DEFINITION_LINK_RELATION_TYPE);
-            }
-            final List<JobDefinition> jobDefinitions = new CopyOnWriteArrayList<>();
-            jobDefinitionUrls
-                    .stream()
-                    .forEach(definitionUrl -> {
-                        try {
-                            LOG.info("Getting job definition from " + definitionUrl);
-                            final AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient
-                                    .prepareGet(definitionUrl);
-                            basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
-                                    boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
-                            );
-                            final Response response = boundRequestBuilder
-                                    .setHeader("Accept", "application/json")
-                                    .execute().get();
-                            if (response.getStatusCode() < 300) {
-                                jobDefinitions.add(jobDefinitionFrom(definitionUrl, service, response));
-                            } else {
-                                LOG.info("Failed to get job definition with " + response.getStatusCode());
-                            }
-                        } catch (InterruptedException | ExecutionException | IOException e) {
-                            LOG.warn("Did not get a job definition from {}: {}", definitionUrl, e.getMessage());
-                        }
-                    });
-            LOG.info("Found " + jobDefinitions.size() + " job definitions.");
-            return jobDefinitions;
-        } catch (final IOException e) {
-            LOG.error("Exception caught while reading job definitions: " + e.getMessage(), e);
-            return emptyList();
+        final LinksRepresentation document = new Gson()
+                .fromJson(jobDefinitionsResponse.getResponseBody(), LinksRepresentation.class);
+        final List<String> jobDefinitionUrls = document.getLinks().stream()
+                .filter(l -> l.rel.equals(JOB_DEFINITION_LINK_RELATION_TYPE))
+                .map(l -> l.href)
+                .collect(toList());
+        if (jobDefinitionUrls.isEmpty()) {
+            LOG.warn("Did not find any URLs with rel={}", JOB_DEFINITION_LINK_RELATION_TYPE);
         }
+        final List<JobDefinition> jobDefinitions = new CopyOnWriteArrayList<>();
+        jobDefinitionUrls
+                .stream()
+                .forEach(definitionUrl -> {
+                    try {
+                        LOG.info("Getting job definition from " + definitionUrl);
+                        final BoundRequestBuilder boundRequestBuilder = httpClient
+                                .prepareGet(definitionUrl);
+                        basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
+                                boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
+                        );
+                        final Response response = boundRequestBuilder
+                                .setHeader("Accept", "application/json")
+                                .execute().get();
+                        if (response.getStatusCode() < 300) {
+                            jobDefinitions.add(jobDefinitionFrom(definitionUrl, service, response));
+                        } else {
+                            LOG.info("Failed to get job definition with " + response.getStatusCode());
+                        }
+                    } catch (InterruptedException | ExecutionException | IOException e) {
+                        LOG.warn("Did not get a job definition from {}: {}", definitionUrl, e.getMessage());
+                    }
+                });
+        LOG.info("Found " + jobDefinitions.size() + " job definitions.");
+        return jobDefinitions;
     }
 
     @VisibleForTesting

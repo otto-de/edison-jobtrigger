@@ -1,12 +1,12 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import static de.otto.edison.jobtrigger.trigger.TriggerRunnables.httpTriggerRunnable;
 import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromHttpStatus;
 import static de.otto.edison.jobtrigger.trigger.TriggerStatus.fromMessage;
 import static de.otto.edison.jobtrigger.trigger.Triggers.periodicTrigger;
@@ -49,6 +48,8 @@ public class TriggerService implements DiscoveryListener {
     private JobScheduler scheduler;
     private AsyncHttpClient httpClient;
 
+    private final TriggerRunnablesService triggerRunnablesService;
+
     private int maxJobResults = 1000;
 
     private final Deque<TriggerResult> lastResults = new ConcurrentLinkedDeque<>();
@@ -56,22 +57,19 @@ public class TriggerService implements DiscoveryListener {
     private final AtomicLong currentIndex = new AtomicLong(0);
     private BasicAuthCredentials basicAuthCredentials;
 
-    TriggerService() {
-        // FOR TESTING
-    }
-
-
     @Autowired
     public TriggerService(final DiscoveryService discoveryService,
                           final JobScheduler scheduler,
                           final AsyncHttpClient httpClient,
                           final JobTriggerProperties jobTriggerProperties,
-                          final BasicAuthCredentials basicAuthCredentials) {
+                          final BasicAuthCredentials basicAuthCredentials,
+                          final TriggerRunnablesService triggerRunnablesService) {
         this.discoveryService = discoveryService;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.maxJobResults = jobTriggerProperties.getJobresults().getMax();
         this.basicAuthCredentials = basicAuthCredentials;
+        this.triggerRunnablesService = triggerRunnablesService;
     }
 
     @PostConstruct
@@ -108,7 +106,7 @@ public class TriggerService implements DiscoveryListener {
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
-        return httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition), basicAuthCredentials);
+        return triggerRunnablesService.httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition), basicAuthCredentials);
     }
 
     private Function<JobDefinition, JobTrigger> toJobTrigger() {

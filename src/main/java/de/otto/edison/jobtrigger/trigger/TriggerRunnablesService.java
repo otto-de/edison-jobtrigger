@@ -1,13 +1,11 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import org.asynchttpclient.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
@@ -18,12 +16,10 @@ import static java.lang.Thread.sleep;
  * @author Guido Steinacker
  * @since 05.09.15
  */
-class TriggerRunnables {
+@Service
+class TriggerRunnablesService {
 
-    private TriggerRunnables() {
-    }
-
-    public static Runnable httpTriggerRunnable(final AsyncHttpClient httpClient,
+    public Runnable httpTriggerRunnable(final AsyncHttpClient httpClient,
                                                final JobDefinition jobDefinition,
                                                final TriggerResponseConsumer consumer,
                                                final BasicAuthCredentials basicAuthCredentials) {
@@ -32,7 +28,7 @@ class TriggerRunnables {
             final String triggerUrl = jobDefinition.getTriggerUrl();
             try {
                 for (int i = 0, n = jobDefinition.getRetries() + 1; i < n; ++i) {
-                    AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(triggerUrl);
+                    BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(triggerUrl);
                     basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
                         boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
                     );
