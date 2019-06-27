@@ -8,7 +8,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 public class TestViewResolverBuilder {
     public static ViewResolver createViewResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setTemplateMode("HTML");
         templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
         SpringTemplateEngine engine = new SpringTemplateEngine();
