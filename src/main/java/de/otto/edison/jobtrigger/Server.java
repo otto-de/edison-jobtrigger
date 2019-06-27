@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 Extend the basePackages to de.otto.edison so SpringBoot is able to find
 the components configured by edison-microservice
 */
-@ComponentScan(basePackages = "de.otto.edison")
+@ComponentScan(basePackages = "de.otto")
 @PropertySource(value="/version.properties", ignoreResourceNotFound = true)
 @SpringBootApplication
 public class Server {
