@@ -11,6 +11,7 @@ ext.libraries = [
         aws: [
                 "software.amazon.awssdk:s3:${awsSdkVersion}",
                 "software.amazon.awssdk:secretsmanager:${awsSdkVersion}"
+                "software.amazon.awssdk:ssm:${awsSdkVersion}"
         ],
         thymeleaf: [
                 "org.thymeleaf:thymeleaf:${thymeleafVersion}",
