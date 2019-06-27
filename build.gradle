@@ -59,6 +59,7 @@ dependencies {
     compile libraries.asyncHttp
     compile libraries.gson
     compile libraries.spring
+    compile libraries.aws
 
     testCompile libraries.test
 }

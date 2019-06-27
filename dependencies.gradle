@@ -8,11 +8,11 @@ ext.libraries = [
         edison: [
                 "de.otto.edison:edison-core:"+edisonrelease
         ],
-        aws :           [
+        aws: [
                 "software.amazon.awssdk:s3:${awsSdkVersion}",
                 "software.amazon.awssdk:secretsmanager:${awsSdkVersion}"
         ],
-        thymeleaf     : [
+        thymeleaf: [
                 "org.thymeleaf:thymeleaf:${thymeleafVersion}",
                 "org.thymeleaf:thymeleaf-spring5:${thymeleafVersion}"
         ],
