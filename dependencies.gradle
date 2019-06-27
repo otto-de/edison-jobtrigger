@@ -2,10 +2,15 @@ ext.edisonrelease = "2.0.0-rc7"
 ext.springBootVersion = "2.1.6.RELEASE"
 ext.springVersion = "5.1.8.RELEASE"
 ext.thymeleafVersion = "3.0.11.RELEASE"
+ext.awsSdkVersion = "2.5.29"
 
 ext.libraries = [
         edison: [
                 "de.otto.edison:edison-core:"+edisonrelease
+        ],
+        aws :           [
+                "software.amazon.awssdk:s3:${awsSdkVersion}",
+                "software.amazon.awssdk:secretsmanager:${awsSdkVersion}"
         ],
         thymeleaf     : [
                 "org.thymeleaf:thymeleaf:${thymeleafVersion}",
