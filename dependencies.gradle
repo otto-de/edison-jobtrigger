@@ -12,7 +12,7 @@ ext.libraries = [
                 "org.thymeleaf:thymeleaf-spring5:${thymeleafVersion}"
         ],
         bootstrap:
-                "org.webjars:bootstrap:4.3.1",
+                "org.webjars:bootstrap:3.4.1",
         guava:
                 "com.google.guava:guava:28.0-jre",
         logging: [
