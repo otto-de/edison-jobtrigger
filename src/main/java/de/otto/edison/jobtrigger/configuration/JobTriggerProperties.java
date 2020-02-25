@@ -73,6 +73,7 @@ public class JobTriggerProperties {
     }
 
     public static class Security {
+
         private String basicAuthUser;
 
         private String basicAuthPasswd;

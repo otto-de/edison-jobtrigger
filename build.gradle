@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
         maven { url "https://plugins.gradle.org/m2/" }
         mavenLocal()
     }
@@ -35,7 +34,6 @@ version = '3.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url "http://repo.spring.io/libs-snapshot" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenLocal()

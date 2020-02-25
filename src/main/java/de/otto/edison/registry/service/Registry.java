@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Guido Steinacker
@@ -21,7 +20,7 @@ public class Registry {
     private final List<RegisteredService> services = Collections.synchronizedList(new ArrayList<>());
 
     public List<RegisteredService> findServices() {
-        services.removeIf(s -> {
+       services.removeIf(s -> {
             boolean expired = s.isExpired();
             if (expired) {
                 LOG.info("Removing expired registry entry " + s.getHref());

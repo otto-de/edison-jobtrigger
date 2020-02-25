@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import de.otto.edison.jobtrigger.security.AuthHeaderProvider;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
@@ -13,11 +13,9 @@ import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Sets.symmetricDifference;
-import static de.otto.edison.jobtrigger.security.BasicAuthCredentials.AUTHORIZATION_HEADER;
 import static java.time.Duration.ofSeconds;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -43,17 +40,17 @@ public class DiscoveryService {
     public static final String JOB_DEFINITION_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/job/definition";
     public static final String JOB_TRIGGER_LINK_RELATION_TYPE = "http://github.com/otto-de/edison/link-relations/job/trigger";
 
-    @Autowired
     private AsyncHttpClient httpClient;
-    @Autowired
     private Registry serviceRegistry;
-    @Autowired
-    private BasicAuthCredentials basicAuthCredentials;
+    private AuthHeaderProvider authHeaderProvider;
 
     private volatile DiscoveryListener listener;
     private volatile ImmutableList<JobDefinition> jobDefinitions = ImmutableList.of();
 
-    public DiscoveryService() {
+    public DiscoveryService(AsyncHttpClient asyncHttpClient, Registry serviceRegistry, AuthHeaderProvider authHeaderProvider) {
+        httpClient = asyncHttpClient;
+        this.serviceRegistry = serviceRegistry;
+        this.authHeaderProvider = authHeaderProvider;
     }
 
     @PostConstruct
@@ -93,9 +90,7 @@ public class DiscoveryService {
                         LOG.info("Trying to find job definitions at " + jobDefinitionsUrl);
                         final BoundRequestBuilder boundRequestBuilder = httpClient
                                 .prepareGet(jobDefinitionsUrl);
-                        basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
-                                boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
-                        );
+                        authHeaderProvider.setAuthHeader(boundRequestBuilder);
                         final Response response = boundRequestBuilder
                                 .setHeader("Accept", "application/json")
                                 .execute().get();
@@ -130,9 +125,7 @@ public class DiscoveryService {
                         LOG.info("Getting job definition from " + definitionUrl);
                         final BoundRequestBuilder boundRequestBuilder = httpClient
                                 .prepareGet(definitionUrl);
-                        basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
-                                boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
-                        );
+                        authHeaderProvider.setAuthHeader(boundRequestBuilder);
                         final Response response = boundRequestBuilder
                                 .setHeader("Accept", "application/json")
                                 .execute().get();
@@ -141,7 +134,7 @@ public class DiscoveryService {
                         } else {
                             LOG.info("Failed to get job definition with " + response.getStatusCode());
                         }
-                    } catch (InterruptedException | ExecutionException | IOException e) {
+                    } catch (InterruptedException | ExecutionException e) {
                         LOG.warn("Did not get a job definition from {}: {}", definitionUrl, e.getMessage());
                     }
                 });
@@ -150,7 +143,7 @@ public class DiscoveryService {
     }
 
     @VisibleForTesting
-    JobDefinition jobDefinitionFrom(final String definitionUrl, final RegisteredService service, final Response response) throws IOException {
+    JobDefinition jobDefinitionFrom(final String definitionUrl, final RegisteredService service, final Response response) {
         final JobDefinitionRepresentation def = new Gson()
                 .fromJson(response.getResponseBody(), JobDefinitionRepresentation.class);
         final Optional<Link> triggerLink = def.getLinks().stream()

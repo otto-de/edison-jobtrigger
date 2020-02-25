@@ -1,7 +1,11 @@
 package de.otto.edison.jobtrigger.configuration;
 
+import de.otto.edison.jobtrigger.security.AuthHeaderProvider;
+import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import de.otto.edison.jobtrigger.security.BasicAuthHeaderProvider;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,5 +35,11 @@ public class JobTriggerConfiguration {
 //        return taskScheduler;
 //    }
 
+
+    @Bean
+    @ConditionalOnMissingBean(AuthHeaderProvider.class)
+    public AuthHeaderProvider basicAuthHeaderProvider(BasicAuthCredentials basicAuthCredentials) {
+        return new BasicAuthHeaderProvider(basicAuthCredentials);
+    }
 
 }

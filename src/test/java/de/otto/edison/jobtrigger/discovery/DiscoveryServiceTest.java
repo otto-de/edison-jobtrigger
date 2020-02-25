@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import de.otto.edison.jobtrigger.security.BasicAuthHeaderProvider;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.asynchttpclient.AsyncHttpClient;
@@ -14,7 +15,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -38,7 +38,6 @@ public class DiscoveryServiceTest {
     public static final String ENV_NAME = "someEnv";
     public static final String DEFAULT_TRIGGER_URL = "someTriggerUrl";
 
-    @InjectMocks
     DiscoveryService testee;
 
     @Mock
@@ -50,9 +49,15 @@ public class DiscoveryServiceTest {
     @Mock
     private BasicAuthCredentials basicAuthCredentials;
 
+
+    private BasicAuthHeaderProvider basicAuthHeaderProvider;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reset(httpClient, serviceRegistry);
+        basicAuthHeaderProvider = new BasicAuthHeaderProvider(basicAuthCredentials);
+
+        testee = new DiscoveryService(httpClient, serviceRegistry, basicAuthHeaderProvider);
     }
 
     @Test
