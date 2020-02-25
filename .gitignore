@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 .shelf
 edison-jobtrigger.ipr
+.idea
 .gradle
 edison-jobtrigger.iws
 edison-jobtrigger.iml

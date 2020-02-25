@@ -73,9 +73,6 @@ public class JobTriggerProperties {
     }
 
     public static class Security {
-        private AuthMethod authMethod = AuthMethod.BASIC;
-
-        private OAuth2 oAuth2;
 
         private String basicAuthUser;
 
@@ -96,55 +93,6 @@ public class JobTriggerProperties {
         public void setBasicAuthPasswd(String basicAuthPasswd) {
             this.basicAuthPasswd = basicAuthPasswd;
         }
-
-        public AuthMethod getAuthMethod() {
-            return authMethod;
-        }
-
-        public void setAuthMethod(AuthMethod authMethod) {
-            this.authMethod = authMethod;
-        }
-
-        public OAuth2 getoAuth2() {
-            return oAuth2;
-        }
-
-        public void setoAuth2(OAuth2 oAuth2) {
-            this.oAuth2 = oAuth2;
-        }
     }
 
-    public static class OAuth2 {
-        private String clientId;
-        private String clientSecret;
-        private String tokenEndpoint;
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        public void setClientId(String clientId) {
-            this.clientId = clientId;
-        }
-
-        public String getClientSecret() {
-            return clientSecret;
-        }
-
-        public void setClientSecret(String clientSecret) {
-            this.clientSecret = clientSecret;
-        }
-
-        public String getTokenEndpoint() {
-            return tokenEndpoint;
-        }
-
-        public void setTokenEndpoint(String tokenEndpoint) {
-            this.tokenEndpoint = tokenEndpoint;
-        }
-    }
-
-    public enum AuthMethod {
-        BASIC, OAUTH2
-    }
 }
