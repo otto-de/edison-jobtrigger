@@ -6,7 +6,9 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
+import de.otto.edison.jobtrigger.security.AuthHeaderProvider;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import de.otto.edison.jobtrigger.security.BasicAuthHeaderProvider;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.junit.Before;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -37,7 +40,6 @@ public class DiscoveryServiceTest {
     public static final String ENV_NAME = "someEnv";
     public static final String DEFAULT_TRIGGER_URL = "someTriggerUrl";
 
-    @InjectMocks
     DiscoveryService testee;
 
     @Mock
@@ -49,9 +51,15 @@ public class DiscoveryServiceTest {
     @Mock
     private BasicAuthCredentials basicAuthCredentials;
 
+
+    private BasicAuthHeaderProvider basicAuthHeaderProvider;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reset(httpClient, serviceRegistry);
+        basicAuthHeaderProvider = new BasicAuthHeaderProvider(basicAuthCredentials);
+
+        testee = new DiscoveryService(httpClient, serviceRegistry, basicAuthHeaderProvider);
     }
 
     @Test
