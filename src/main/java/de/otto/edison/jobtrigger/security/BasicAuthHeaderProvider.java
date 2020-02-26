@@ -4,7 +4,7 @@ import org.asynchttpclient.BoundRequestBuilder;
 
 import static de.otto.edison.jobtrigger.security.BasicAuthCredentials.AUTHORIZATION_HEADER;
 
-public class BasicAuthHeaderProvider implements AuthHeaderProvider {
+public class BasicAuthHeaderProvider implements AuthProvider {
 
     private final BasicAuthCredentials basicAuthCredentials;
 

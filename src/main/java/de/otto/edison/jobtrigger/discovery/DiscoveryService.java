@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.security.AuthHeaderProvider;
+import de.otto.edison.jobtrigger.security.AuthProvider;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
@@ -42,12 +42,12 @@ public class DiscoveryService {
 
     private AsyncHttpClient httpClient;
     private Registry serviceRegistry;
-    private AuthHeaderProvider authHeaderProvider;
+    private AuthProvider authHeaderProvider;
 
     private volatile DiscoveryListener listener;
     private volatile ImmutableList<JobDefinition> jobDefinitions = ImmutableList.of();
 
-    public DiscoveryService(AsyncHttpClient asyncHttpClient, Registry serviceRegistry, AuthHeaderProvider authHeaderProvider) {
+    public DiscoveryService(AsyncHttpClient asyncHttpClient, Registry serviceRegistry, AuthProvider authHeaderProvider) {
         httpClient = asyncHttpClient;
         this.serviceRegistry = serviceRegistry;
         this.authHeaderProvider = authHeaderProvider;

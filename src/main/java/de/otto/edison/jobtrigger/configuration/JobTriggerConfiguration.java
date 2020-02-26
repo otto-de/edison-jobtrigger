@@ -1,6 +1,6 @@
 package de.otto.edison.jobtrigger.configuration;
 
-import de.otto.edison.jobtrigger.security.AuthHeaderProvider;
+import de.otto.edison.jobtrigger.security.AuthProvider;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import de.otto.edison.jobtrigger.security.BasicAuthHeaderProvider;
 import org.asynchttpclient.AsyncHttpClient;
@@ -37,8 +37,8 @@ public class JobTriggerConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(AuthHeaderProvider.class)
-    public AuthHeaderProvider basicAuthHeaderProvider(BasicAuthCredentials basicAuthCredentials) {
+    @ConditionalOnMissingBean(AuthProvider.class)
+    public AuthProvider basicAuthHeaderProvider(BasicAuthCredentials basicAuthCredentials) {
         return new BasicAuthHeaderProvider(basicAuthCredentials);
     }
 
