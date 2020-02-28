@@ -1,8 +1,8 @@
-ext.edisonrelease = "2.0.0-rc7"
-ext.springBootVersion = "2.1.6.RELEASE"
-ext.springVersion = "5.1.8.RELEASE"
+ext.edisonrelease = "2.2.5"
+ext.springBootVersion = "2.2.0.RELEASE"
+ext.springVersion = "5.2.3.RELEASE"
 ext.thymeleafVersion = "3.0.11.RELEASE"
-ext.awsSdkVersion = "2.5.29"
+ext.awsSdkVersion = "2.10.56"
 
 ext.libraries = [
         edison: [

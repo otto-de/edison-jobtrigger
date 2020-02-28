@@ -24,14 +24,21 @@ edison:
     status:
         redirect-internal:
             enabled: true
-endpoints:
-    metrics:
-        filter:
-            enabled: false
 management:
-    contextPath: /internal
+    context-path: /internal
+    security:
+        enabled: false
+    endpoint:
+        metrics:
+            enabled: false
+        loggers:
+            enabled: true
     health:
         diskspace:
             enabled: false
+    endpoints:
+        web:
+            exposure:
+                include: '*'
 
 
