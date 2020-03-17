@@ -91,7 +91,7 @@ public class TriggerServiceTest {
         when(discoveryService.allJobDefinitions()).thenReturn(ImmutableList.of(fixedDelayDefinition, cronDefinition, noDelayDefinition));
         final Runnable expectedRunnable = () -> {
         };
-        when(triggerRunnablesService.httpTriggerRunnable(eq(httpClient), any(JobDefinition.class), any(TriggerResponseConsumer.class), any(BasicAuthCredentials.class))).thenReturn(expectedRunnable);
+        when(triggerRunnablesService.httpTriggerRunnable(any(JobDefinition.class), any(TriggerResponseConsumer.class))).thenReturn(expectedRunnable);
 
         testee.startTriggering();
 

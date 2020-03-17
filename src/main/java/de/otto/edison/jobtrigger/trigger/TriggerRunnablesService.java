@@ -1,7 +1,7 @@
 package de.otto.edison.jobtrigger.trigger;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import de.otto.edison.jobtrigger.security.AuthProvider;
 import org.asynchttpclient.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +19,23 @@ import static java.lang.Thread.sleep;
 @Service
 class TriggerRunnablesService {
 
-    public Runnable httpTriggerRunnable(final AsyncHttpClient httpClient,
-                                               final JobDefinition jobDefinition,
-                                               final TriggerResponseConsumer consumer,
-                                               final BasicAuthCredentials basicAuthCredentials) {
+    private final AuthProvider authHeaderProvider;
+    private final AsyncHttpClient httpClient;
+
+    TriggerRunnablesService(AuthProvider authHeaderProvider, AsyncHttpClient httpClient) {
+        this.authHeaderProvider = authHeaderProvider;
+        this.httpClient = httpClient;
+    }
+    public Runnable httpTriggerRunnable(
+            final JobDefinition jobDefinition,
+            final TriggerResponseConsumer consumer) {
         return () -> {
             final Logger LOG = LoggerFactory.getLogger("de.otto.edison.jobtrigger.trigger.HttpTriggerRunnable");
             final String triggerUrl = jobDefinition.getTriggerUrl();
             try {
                 for (int i = 0, n = jobDefinition.getRetries() + 1; i < n; ++i) {
                     BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(triggerUrl);
-                    basicAuthCredentials.base64Encoded().ifPresent(encodedCredentials ->
-                        boundRequestBuilder.setHeader(AUTHORIZATION_HEADER, encodedCredentials)
-                    );
+                    authHeaderProvider.setAuthHeader(boundRequestBuilder);
                     final ListenableFuture<Response> futureResponse = boundRequestBuilder.execute(new AsyncCompletionHandler<Response>() {
                         @Override
                         public Response onCompleted(final Response response) throws Exception {

@@ -106,7 +106,7 @@ public class TriggerService implements DiscoveryListener {
     }
 
     private Runnable runnableFor(final JobDefinition jobDefinition) {
-        return triggerRunnablesService.httpTriggerRunnable(httpClient, jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition), basicAuthCredentials);
+        return triggerRunnablesService.httpTriggerRunnable(jobDefinition, new DefaultTriggerResponseConsumer(jobDefinition));
     }
 
     private Function<JobDefinition, JobTrigger> toJobTrigger() {
