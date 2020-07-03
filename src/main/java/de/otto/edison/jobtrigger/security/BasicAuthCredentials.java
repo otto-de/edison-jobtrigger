@@ -1,8 +1,7 @@
 package de.otto.edison.jobtrigger.security;
 
-import com.unboundid.util.Base64;
+import java.util.Base64;
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
-import org.asynchttpclient.AsyncHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -40,7 +39,7 @@ public class BasicAuthCredentials {
             return Optional.empty();
         } else {
             final String credentials = basicAuthUser + ":" + basicAuthPasswd;
-            return Optional.of(BASIC_PREFIX + Base64.encode(credentials.getBytes()));
+            return Optional.of(BASIC_PREFIX + Base64.getEncoder().encodeToString(credentials.getBytes()));
         }
     }
 }
