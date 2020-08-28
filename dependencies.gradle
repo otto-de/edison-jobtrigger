@@ -1,7 +1,7 @@
-ext.edisonrelease = "2.2.10"
-ext.springBootVersion = "2.3.1.RELEASE"
-ext.springVersion = "5.2.7.RELEASE"
-ext.awsSdkVersion = "2.13.49"
+ext.edisonrelease = "2.3.0"
+ext.springBootVersion = "2.3.3.RELEASE"
+ext.springVersion = "5.2.8.RELEASE"
+ext.awsSdkVersion = "2.14.6"
 
 ext.libraries = [
         edison: [
@@ -13,7 +13,7 @@ ext.libraries = [
                 "software.amazon.awssdk:ssm:${awsSdkVersion}"
         ],
         bootstrap:
-                "org.webjars:bootstrap:4.5.0",
+                "org.webjars:bootstrap:4.5.2",
         guava:
                 "com.google.guava:guava:29.0-jre",
         logging: [
@@ -33,7 +33,7 @@ ext.libraries = [
                 "org.asynchttpclient:async-http-client:2.12.1",
         test: [
                 "junit:junit:4.13",
-                "org.mockito:mockito-core:3.3.3",
+                "org.mockito:mockito-core:3.5.7",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework:spring-test:" + ext.springVersion,
                 "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
