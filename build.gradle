@@ -30,7 +30,7 @@ defaultTasks 'clean', 'check'
 
 archivesBaseName = 'edison-jobtrigger'
 group = 'de.otto.edison'
-version = '3.0.0-SNAPSHOT'
+version = '2.3.1'
 
 repositories {
     mavenCentral()

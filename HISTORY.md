@@ -1,6 +1,6 @@
-## Release 3.0.0
+## Release 2.3.1
 
-* Use Edison 2.0.0-rc7, Spring Boot 2.1.6 and recent libs to make edison-jobtrigger run with Java > 8
+* Use Edison 2.3.1, Spring Boot 2.3.x and recent libs
 
 ## Snapshot 2.1.0
 
