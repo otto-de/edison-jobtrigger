@@ -1,4 +1,4 @@
-ext.edisonrelease = "2.3.0"
+ext.edisonrelease = "2.3.1"
 ext.springBootVersion = "2.3.3.RELEASE"
 ext.springVersion = "5.2.8.RELEASE"
 ext.awsSdkVersion = "2.14.6"
