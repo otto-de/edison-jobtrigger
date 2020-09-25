@@ -1,3 +1,8 @@
+## Release 2.3.2
+
+* Use gradle 6.6.1
+* Update some dependencies
+
 ## Release 2.3.1
 
 * Use Edison 2.3.1, Spring Boot 2.3.x and recent libs
