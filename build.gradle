@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:2.3.3.RELEASE"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.29.0"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.33.0"
         classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.3"
     }
 }
