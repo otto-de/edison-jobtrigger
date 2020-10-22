@@ -1,7 +1,7 @@
 ext.edisonrelease = "2.3.1"
-ext.springBootVersion = "2.3.3.RELEASE"
-ext.springVersion = "5.2.8.RELEASE"
-ext.awsSdkVersion = "2.14.25"
+ext.springBootVersion = "2.3.4.RELEASE"
+ext.springVersion = "5.2.9.RELEASE"
+ext.awsSdkVersion = "2.15.12"
 
 ext.libraries = [
         edison: [
@@ -13,9 +13,9 @@ ext.libraries = [
                 "software.amazon.awssdk:ssm:${awsSdkVersion}"
         ],
         bootstrap:
-                "org.webjars:bootstrap:4.5.2",
+                "org.webjars:bootstrap:4.5.3",
         guava:
-                "com.google.guava:guava:29.0-jre",
+                "com.google.guava:guava:30.0-jre",
         logging: [
                 "ch.qos.logback:logback-core:1.2.3",
                 "ch.qos.logback:logback-classic:1.2.3",
@@ -24,7 +24,7 @@ ext.libraries = [
         ],
         spring: [
                 "org.springframework.vault:spring-vault-core:2.2.2.RELEASE",
-                "org.hibernate:hibernate-validator:6.1.5.Final",
+                "org.hibernate:hibernate-validator:6.1.6.Final",
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
         gson:
@@ -32,8 +32,8 @@ ext.libraries = [
         asyncHttp:
                 "org.asynchttpclient:async-http-client:2.12.1",
         test: [
-                "junit:junit:4.13",
-                "org.mockito:mockito-core:3.5.13",
+                "junit:junit:4.13.1",
+                "org.mockito:mockito-core:3.5.15",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework:spring-test:" + ext.springVersion,
                 "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
