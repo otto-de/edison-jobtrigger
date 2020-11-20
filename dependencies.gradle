@@ -1,7 +1,7 @@
-ext.edisonrelease = "2.3.1"
-ext.springBootVersion = "2.3.4.RELEASE"
-ext.springVersion = "5.2.9.RELEASE"
-ext.awsSdkVersion = "2.15.12"
+ext.edisonrelease = "2.4.0"
+ext.springBootVersion = "2.4.0"
+ext.springVersion = "5.3.1"
+ext.awsSdkVersion = "2.15.32"
 
 ext.libraries = [
         edison: [
@@ -33,7 +33,7 @@ ext.libraries = [
                 "org.asynchttpclient:async-http-client:2.12.1",
         test: [
                 "junit:junit:4.13.1",
-                "org.mockito:mockito-core:3.5.15",
+                "org.mockito:mockito-core:3.6.0",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework:spring-test:" + ext.springVersion,
                 "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
