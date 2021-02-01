@@ -3,36 +3,38 @@ ext.springBootVersion = "2.4.2"
 ext.awsSdkVersion = "2.15.73"
 
 ext.libraries = [
-        edison: [
-                "de.otto.edison:edison-core:"+edisonrelease
+        edison   : [
+                "de.otto.edison:edison-core:" + edisonrelease
         ],
-        aws: [
+        aws      : [
                 "software.amazon.awssdk:s3:${awsSdkVersion}",
                 "software.amazon.awssdk:secretsmanager:${awsSdkVersion}",
                 "software.amazon.awssdk:ssm:${awsSdkVersion}"
         ],
-        bootstrap:
+        bootstrap: [
                 //Don't forget to also update the links in the html templates if you change this!
+                "org.webjars:jquery:3.5.1",
                 "org.webjars:bootstrap:4.6.0",
                 //Don't forget to also update the links in the html templates if you change this!
-        guava:
+        ],
+        guava    :
                 "com.google.guava:guava:30.1-jre",
-        logging: [
+        logging  : [
                 "ch.qos.logback:logback-core:1.2.3",
                 "ch.qos.logback:logback-classic:1.2.3",
                 "net.logstash.logback:logstash-logback-encoder:6.6",
                 "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
         ],
-        spring: [
+        spring   : [
                 "org.springframework.vault:spring-vault-core:2.3.0",
                 "org.hibernate:hibernate-validator:6.1.6.Final",
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
-        gson:
+        gson     :
                 "com.google.code.gson:gson:2.8.6",
         asyncHttp:
                 "org.asynchttpclient:async-http-client:2.12.2",
-        test: [
+        test     : [
                 "junit:junit:4.13.1",
                 "org.mockito:mockito-core:3.7.0",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
@@ -40,7 +42,7 @@ ext.libraries = [
                 "de.otto.edison:edison-testsupport:" + edisonrelease
 
         ],
-        jetty: [
+        jetty    : [
                 "org.springframework.boot:spring-boot-starter-jetty:" + ext.springBootVersion
         ]
 ]
