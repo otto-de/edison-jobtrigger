@@ -12,7 +12,9 @@ ext.libraries = [
                 "software.amazon.awssdk:ssm:${awsSdkVersion}"
         ],
         bootstrap:
+                //Don't forget to also update the links in the html templates if you change this!
                 "org.webjars:bootstrap:4.6.0",
+                //Don't forget to also update the links in the html templates if you change this!
         guava:
                 "com.google.guava:guava:30.1-jre",
         logging: [
