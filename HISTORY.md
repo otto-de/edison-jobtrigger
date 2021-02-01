@@ -1,3 +1,12 @@
+## Release 2.3.4
+
+* Update bootstrap to 4.6.0 and fix links in html templates
+* Dependency updates
+
+## Release 2.3.3
+
+* Dependency updates
+
 ## Release 2.3.2
 
 * Use gradle 6.6.1
