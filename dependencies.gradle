@@ -1,10 +1,11 @@
-ext.edisonrelease = "2.4.4"
+ext.edisonrelease = "2.4.5"
 ext.springBootVersion = "2.4.2"
-ext.awsSdkVersion = "2.15.73"
+ext.awsSdkVersion = "2.15.79"
+ext.logbackVersion = "1.2.3"
 
 ext.libraries = [
         edison   : [
-                "de.otto.edison:edison-core:" + edisonrelease
+                "de.otto.edison:edison-core:${edisonrelease}"
         ],
         aws      : [
                 "software.amazon.awssdk:s3:${awsSdkVersion}",
@@ -20,8 +21,8 @@ ext.libraries = [
         guava    :
                 "com.google.guava:guava:30.1-jre",
         logging  : [
-                "ch.qos.logback:logback-core:1.2.3",
-                "ch.qos.logback:logback-classic:1.2.3",
+                "ch.qos.logback:logback-core:${logbackVersion}",
+                "ch.qos.logback:logback-classic:${logbackVersion}",
                 "net.logstash.logback:logstash-logback-encoder:6.6",
                 "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
         ],
@@ -36,13 +37,13 @@ ext.libraries = [
                 "org.asynchttpclient:async-http-client:2.12.2",
         test     : [
                 "junit:junit:4.13.1",
-                "org.mockito:mockito-core:3.7.0",
+                "org.mockito:mockito-core:3.7.7",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
-                "org.springframework.boot:spring-boot-starter-test:" + ext.springBootVersion,
-                "de.otto.edison:edison-testsupport:" + edisonrelease
+                "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
+                "de.otto.edison:edison-testsupport:${edisonrelease}"
 
         ],
         jetty    : [
-                "org.springframework.boot:spring-boot-starter-jetty:" + ext.springBootVersion
+                "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
         ]
 ]
