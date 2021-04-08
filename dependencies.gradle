@@ -1,6 +1,6 @@
-ext.edisonrelease = "2.4.5"
-ext.springBootVersion = "2.4.2"
-ext.awsSdkVersion = "2.15.79"
+ext.edisonrelease = "2.4.6"
+ext.springBootVersion = "2.4.4"
+ext.awsSdkVersion = "2.16.37"
 ext.logbackVersion = "1.2.3"
 
 ext.libraries = [
@@ -14,12 +14,12 @@ ext.libraries = [
         ],
         bootstrap: [
                 //Don't forget to also update the links in the html templates if you change this!
-                "org.webjars:jquery:3.5.1",
-                "org.webjars:bootstrap:4.6.0",
+                "org.webjars:jquery:3.6.0",
+                "org.webjars:bootstrap:4.6.0-1",
                 //Don't forget to also update the links in the html templates if you change this!
         ],
         guava    :
-                "com.google.guava:guava:30.1-jre",
+                "com.google.guava:guava:30.1.1-jre",
         logging  : [
                 "ch.qos.logback:logback-core:${logbackVersion}",
                 "ch.qos.logback:logback-classic:${logbackVersion}",
@@ -27,17 +27,17 @@ ext.libraries = [
                 "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
         ],
         spring   : [
-                "org.springframework.vault:spring-vault-core:2.3.0",
-                "org.hibernate:hibernate-validator:6.1.6.Final",
+                "org.springframework.vault:spring-vault-core:2.3.2",
+                "org.hibernate.validator:hibernate-validator:6.1.6.Final",
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
         gson     :
                 "com.google.code.gson:gson:2.8.6",
         asyncHttp:
-                "org.asynchttpclient:async-http-client:2.12.2",
+                "org.asynchttpclient:async-http-client:2.12.3",
         test     : [
-                "junit:junit:4.13.1",
-                "org.mockito:mockito-core:3.7.7",
+                "junit:junit:4.13.2",
+                "org.mockito:mockito-core:3.9.0",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 "de.otto.edison:edison-testsupport:${edisonrelease}"
