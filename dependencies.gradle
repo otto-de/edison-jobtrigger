@@ -1,6 +1,6 @@
-ext.edisonrelease = "2.4.6"
-ext.springBootVersion = "2.4.4"
-ext.awsSdkVersion = "2.16.37"
+ext.edisonrelease = "2.4.7"
+ext.springBootVersion = "2.4.5"
+ext.awsSdkVersion = "2.16.57"
 ext.logbackVersion = "1.2.3"
 
 ext.libraries = [
