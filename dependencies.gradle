@@ -1,6 +1,6 @@
 ext.edisonrelease = "2.4.7"
-ext.springBootVersion = "2.4.5"
-ext.awsSdkVersion = "2.16.57"
+ext.springBootVersion = "2.5.0"
+ext.awsSdkVersion = "2.16.76"
 ext.logbackVersion = "1.2.3"
 
 ext.libraries = [
@@ -32,12 +32,12 @@ ext.libraries = [
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
         gson     :
-                "com.google.code.gson:gson:2.8.6",
+                "com.google.code.gson:gson:2.8.7",
         asyncHttp:
                 "org.asynchttpclient:async-http-client:2.12.3",
         test     : [
                 "junit:junit:4.13.2",
-                "org.mockito:mockito-core:3.9.0",
+                "org.mockito:mockito-core:3.10.0",
                 "org.hamcrest:java-hamcrest:2.0.0.0",
                 "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 "de.otto.edison:edison-testsupport:${edisonrelease}"
