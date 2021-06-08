@@ -1,3 +1,7 @@
+## Release 2.3.5
+
+* Dependency updates, Spring Boot 2.5.0 and recent libs
+
 ## Release 2.3.4
 
 * Update bootstrap to 4.6.0 and fix links in html templates
