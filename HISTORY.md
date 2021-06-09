@@ -1,3 +1,7 @@
+## Release 2.3.6
+
+* fix bootstrap and jquery links in html templates
+
 ## Release 2.3.5
 
 * Dependency updates, Spring Boot 2.5.0 and recent libs
