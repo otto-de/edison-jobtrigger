@@ -100,7 +100,7 @@ public class DiscoveryService {
                             LOG.info("No definitions found for {}. Status={}", service.getService(), response.getStatusCode());
                         }
                     } catch (final Exception e) {
-                        LOG.warn("Did not get a response from {}: {}", jobDefinitionsUrl, e.getMessage());
+                        LOG.warn("Did not get a response from {} with Exception message '{}'.", jobDefinitionsUrl, e.getMessage(), e);
                     }
                 });
         return ImmutableList.copyOf(result);
