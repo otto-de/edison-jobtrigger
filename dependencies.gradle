@@ -28,7 +28,7 @@ ext.libraries = [
         ],
         spring   : [
                 "org.springframework.vault:spring-vault-core:2.3.2",
-                "org.hibernate.validator:hibernate-validator:6.2.0.Final",
+                "org.hibernate.validator:hibernate-validator:7.0.1.Final",
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
         gson     :
