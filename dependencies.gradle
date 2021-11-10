@@ -1,6 +1,6 @@
 ext.edisonrelease = "2.5.5"
 ext.springBootVersion = "2.5.0"
-ext.awsSdkVersion = "2.16.76"
+ext.awsSdkVersion = "2.17.78"
 ext.logbackVersion = "1.2.6"
 
 ext.libraries = [
