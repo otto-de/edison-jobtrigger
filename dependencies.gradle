@@ -19,7 +19,7 @@ ext.libraries = [
                 //Don't forget to also update the links in the html templates if you change this!
         ],
         guava    :
-                "com.google.guava:guava:30.1.1-jre",
+                "com.google.guava:guava:31.1-jre",
         logging  : [
                 "ch.qos.logback:logback-core:${logbackVersion}",
                 "ch.qos.logback:logback-classic:${logbackVersion}",
