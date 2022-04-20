@@ -4,9 +4,9 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.5.6"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.39.0"
-        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.6.6"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+        classpath "com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.0"
     }
 }
 
