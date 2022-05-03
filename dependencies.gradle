@@ -15,7 +15,7 @@ ext.libraries = [
         bootstrap: [
                 //Don't forget to also update the links in the html templates if you change this!
                 "org.webjars:jquery:3.6.0",
-                "org.webjars:bootstrap:4.6.0-1",
+                "org.webjars:bootstrap:5.1.3",
                 //Don't forget to also update the links in the html templates if you change this!
         ],
         guava    :
