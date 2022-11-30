@@ -1,6 +1,6 @@
 ext.edisonrelease = '2.7.6'
-ext.springBootVersion = '2.7.5'
-ext.awsSdkVersion = '2.18.9'
+ext.springBootVersion = '2.7.6'
+ext.awsSdkVersion = '2.18.24'
 ext.logbackVersion = '1.2.11'
 
 ext.libraries = [
@@ -15,7 +15,7 @@ ext.libraries = [
         bootstrap: [
                 //Don't forget to also update the links in the html templates if you change this!
                 "org.webjars:jquery:3.6.1",
-                "org.webjars:bootstrap:4.6.0-1",
+                'org.webjars:bootstrap:4.6.2',
                 //Don't forget to also update the links in the html templates if you change this!
         ],
         guava    :
@@ -28,7 +28,7 @@ ext.libraries = [
         ],
         spring   : [
                 "org.springframework.vault:spring-vault-core:2.3.2",
-                "org.hibernate.validator:hibernate-validator:6.2.3.Final",
+                'org.hibernate.validator:hibernate-validator:6.2.5.Final',
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
         gson     :
