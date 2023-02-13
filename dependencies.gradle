@@ -1,5 +1,5 @@
 ext.edisonrelease = '2.7.7'
-ext.springBootVersion = '2.7.6'
+ext.springBootVersion = '2.7.8'
 ext.awsSdkVersion = '2.18.27'
 ext.logbackVersion = '1.2.11'
 
@@ -14,7 +14,7 @@ ext.libraries = [
         ],
         bootstrap: [
                 //Don't forget to also update the links in the html templates if you change this!
-                "org.webjars:jquery:3.6.1",
+                "org.webjars:jquery:3.6.3",
                 'org.webjars:bootstrap:4.6.2',
                 //Don't forget to also update the links in the html templates if you change this!
         ],
