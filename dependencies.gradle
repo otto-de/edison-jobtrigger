@@ -23,7 +23,7 @@ ext.libraries = [
         logging  : [
                 "ch.qos.logback:logback-core:${logbackVersion}",
                 "ch.qos.logback:logback-classic:${logbackVersion}",
-                "net.logstash.logback:logstash-logback-encoder:7.2",
+                "net.logstash.logback:logstash-logback-encoder:7.3",
                 "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
         ],
         spring   : [
