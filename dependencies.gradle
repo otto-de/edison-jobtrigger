@@ -27,7 +27,7 @@ ext.libraries = [
                 "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
         ],
         spring   : [
-                "org.springframework.vault:spring-vault-core:2.3.2",
+                "org.springframework.vault:spring-vault-core:3.0.1",
                 'org.hibernate.validator:hibernate-validator:6.2.5.Final',
                 "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
         ],
