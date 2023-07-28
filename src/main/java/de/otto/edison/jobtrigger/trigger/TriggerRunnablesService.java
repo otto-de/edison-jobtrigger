@@ -26,6 +26,7 @@ class TriggerRunnablesService {
         this.authHeaderProvider = authHeaderProvider;
         this.httpClient = httpClient;
     }
+
     public Runnable httpTriggerRunnable(
             final JobDefinition jobDefinition,
             final TriggerResponseConsumer consumer) {
@@ -39,8 +40,6 @@ class TriggerRunnablesService {
                     final ListenableFuture<Response> futureResponse = boundRequestBuilder.execute(new AsyncCompletionHandler<Response>() {
                         @Override
                         public Response onCompleted(final Response response) throws Exception {
-                            final String location = response.getHeader("Location");
-                            final int status = response.getStatusCode();
                             consumer.consume(response);
                             return response;
                         }
@@ -57,12 +56,12 @@ class TriggerRunnablesService {
                         if (i < (jobDefinition).getRetries()) {
                             if (jobDefinition.getRetryDelay().isPresent()) {
                                 final Duration duration = jobDefinition.getRetryDelay().get();
-                                LOG.info("Retrying trigger in " + duration.getSeconds() + "s");
+                                LOG.info("Retrying trigger in {}s", duration.getSeconds());
                                 sleep(duration.toMillis());
                             }
-                            LOG.info("Trigger failed. Retry " + jobDefinition.getJobType() + "[" + (i + 1) + "/" + jobDefinition.getRetries() + "]");
+                            LOG.info("Trigger failed. Retry {}[{}/{}]", jobDefinition.getJobType(), i + 1, jobDefinition.getRetries());
                         } else {
-                            LOG.info("Trigger failed. No more retries.");
+                            LOG.warn("Trigger failed. No more retries for {}. Total retires: {}", jobDefinition.getJobType(), jobDefinition.getRetries());
                         }
                     }
                 }

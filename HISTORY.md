@@ -1,3 +1,6 @@
+## Release 2.3.11-SNAPSHOT
+* Log trigger failed after no more retries with jobType and as warning.
+
 ## Release 2.3.10
 
 * fix jquery links in html templates
