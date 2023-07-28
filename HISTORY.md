@@ -1,4 +1,11 @@
+## Release 2.3.12-SNAPSHOT
+
+* Do not retry job trigger when Job is already/still running. Edison-jobs is returning 409, when a job is running. 
+  * See
+    documentation in edison-jobs https://github.com/otto-de/edison-microservice/blob/b503629b09b522e06deea998b44472d20f3f6bc3/edison-jobs/src/main/java/de/otto/edison/jobs/controller/JobsController.java#L97)
+
 ## Release 2.3.11
+
 * Log trigger failed after no more retries with jobType and as warning.
 
 ## Release 2.3.10
@@ -33,7 +40,8 @@
 
 ## Snapshot 2.1.0
 
-* Add LDAP-Authorization: New properties edison.jobtrigger.security.basicAuthUser and edison.jobtrigger.security.basicAuthPasswd
+* Add LDAP-Authorization: New properties edison.jobtrigger.security.basicAuthUser and
+  edison.jobtrigger.security.basicAuthPasswd
 * Add possibility to set values for version.properties via environment variables instead of git information
 
 ## Release 2.0.0

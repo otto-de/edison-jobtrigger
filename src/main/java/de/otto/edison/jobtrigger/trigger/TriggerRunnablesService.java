@@ -50,7 +50,11 @@ class TriggerRunnablesService {
                         }
                     });
 
-                    if (futureResponse.get().getStatusCode() < 300) {
+                    /*
+                     * 409 -> Job is already/still running.
+                     */
+                    if (futureResponse.get().getStatusCode() < 300
+                            || futureResponse.get().getStatusCode() == 409) {
                         return;
                     } else {
                         if (i < (jobDefinition).getRetries()) {
@@ -59,9 +63,9 @@ class TriggerRunnablesService {
                                 LOG.info("Retrying trigger in {}s", duration.getSeconds());
                                 sleep(duration.toMillis());
                             }
-                            LOG.info("Trigger failed. Retry {}[{}/{}]", jobDefinition.getJobType(), i + 1, jobDefinition.getRetries());
+                            LOG.info("Trigger failed. Retry {}[{}/{}]. StatusCode: {}", jobDefinition.getJobType(), i + 1, jobDefinition.getRetries(), futureResponse.get().getStatusCode());
                         } else {
-                            LOG.warn("Trigger failed. No more retries for {}. Total retires: {}", jobDefinition.getJobType(), jobDefinition.getRetries());
+                            LOG.warn("Trigger failed. No more retries for {}. Total retires: {}. StatusCode: {}", jobDefinition.getJobType(), jobDefinition.getRetries(), futureResponse.get().getStatusCode());
                         }
                     }
                 }
