@@ -1,4 +1,4 @@
-## Release 2.3.11-SNAPSHOT
+## Release 2.3.11
 * Log trigger failed after no more retries with jobType and as warning.
 
 ## Release 2.3.10
