@@ -1,6 +1,6 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import static javax.servlet.http.HttpServletResponse.*;
+import static jakarta.servlet.http.HttpServletResponse.*;
 
 /**
  * @author Guido Steinacker

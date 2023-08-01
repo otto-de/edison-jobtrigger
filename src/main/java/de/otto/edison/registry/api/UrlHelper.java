@@ -1,6 +1,7 @@
 package de.otto.edison.registry.api;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 

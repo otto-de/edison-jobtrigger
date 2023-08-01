@@ -8,6 +8,7 @@ import de.otto.edison.jobtrigger.security.AuthProvider;
 import de.otto.edison.registry.api.Link;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
+import jakarta.annotation.PostConstruct;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.Response;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;

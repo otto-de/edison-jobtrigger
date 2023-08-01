@@ -5,6 +5,7 @@ import de.otto.edison.jobtrigger.definition.JobDefinition;
 import de.otto.edison.jobtrigger.discovery.DiscoveryListener;
 import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
+import jakarta.annotation.PostConstruct;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Deque;

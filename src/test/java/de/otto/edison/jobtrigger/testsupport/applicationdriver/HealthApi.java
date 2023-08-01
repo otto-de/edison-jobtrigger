@@ -7,7 +7,7 @@ import de.otto.edison.jobtrigger.testsupport.dsl.When;
 import de.otto.edison.status.indicator.CachedApplicationStatusAggregator;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,7 +28,7 @@ public class HealthApi extends AbstractSpringTest {
     private final static RestTemplate restTemplate = new RestTemplate();
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private static String content = null;
-    private static HttpStatus statusCode;
+    private static HttpStatusCode statusCode;
 
     private static Collection<CachedApplicationStatusAggregator> applicationStatusAggregator = applicationContext().getBeansOfType(CachedApplicationStatusAggregator.class).values();
 
@@ -57,7 +57,7 @@ public class HealthApi extends AbstractSpringTest {
         statusCode = responseEntity.getStatusCode();
     }
 
-    public static HttpStatus the_status_code() {
+    public static HttpStatusCode the_status_code() {
         return statusCode;
     }
 

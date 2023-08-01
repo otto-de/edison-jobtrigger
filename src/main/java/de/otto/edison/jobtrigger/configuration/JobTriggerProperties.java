@@ -1,10 +1,9 @@
 package de.otto.edison.jobtrigger.configuration;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 
 @Component
 @ConfigurationProperties(prefix = "edison.jobtrigger")
