@@ -1,12 +1,12 @@
 package de.otto.edison.jobtrigger.security;
 
-import java.util.Base64;
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.vault.core.VaultOperations;
 
+import java.util.Base64;
 import java.util.Optional;
 
 @Component

@@ -1,7 +1,6 @@
 package de.otto.edison.jobtrigger.discovery;
 
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import de.otto.edison.registry.service.Registry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

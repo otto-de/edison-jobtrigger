@@ -6,10 +6,12 @@ import de.otto.edison.jobtrigger.util.TestViewResolverBuilder;
 import de.otto.edison.registry.service.RegisteredService;
 import de.otto.edison.registry.service.Registry;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -17,16 +19,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.Duration;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class RegistryControllerTest {
 
     MockMvc mockMvc;
@@ -38,13 +40,11 @@ public class RegistryControllerTest {
     @InjectMocks
     RegistryController controller;
 
-    @Before
-    public void setUp() throws Exception {
-        initMocks(this);
+    @BeforeEach
+    public void setUp() {
         reset(registry);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setViewResolvers(TestViewResolverBuilder.createViewResolver()).build();
-        ;
     }
 
     @Test

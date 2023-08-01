@@ -2,19 +2,19 @@ package de.otto.edison.jobtrigger.trigger;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.edison.jobtrigger.definition.JobDefinition;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import java.util.concurrent.ScheduledFuture;
 
 import static org.mockito.Mockito.*;
 
-import java.util.concurrent.ScheduledFuture;
-
+@ExtendWith(MockitoExtension.class)
 public class JobSchedulerTest {
 
     @Mock
@@ -22,11 +22,6 @@ public class JobSchedulerTest {
 
     @InjectMocks
     private JobScheduler testee;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testShouldScheduleAllTriggers() {

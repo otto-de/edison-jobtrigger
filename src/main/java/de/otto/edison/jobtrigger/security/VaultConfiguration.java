@@ -7,7 +7,6 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.config.AbstractVaultConfiguration;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.net.URI;
 

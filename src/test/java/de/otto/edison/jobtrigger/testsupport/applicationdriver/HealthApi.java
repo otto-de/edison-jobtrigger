@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
-import static de.otto.edison.jobtrigger.testsupport.dsl.Given.*;
-import static de.otto.edison.jobtrigger.testsupport.dsl.When.*;
+import static de.otto.edison.jobtrigger.testsupport.dsl.Given.GIVEN;
+import static de.otto.edison.jobtrigger.testsupport.dsl.When.WHEN;
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static org.springframework.http.HttpMethod.GET;

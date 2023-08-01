@@ -1,7 +1,11 @@
 package de.otto.edison.jobtrigger.trigger;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,13 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import static com.google.common.collect.ImmutableSet.copyOf;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  *

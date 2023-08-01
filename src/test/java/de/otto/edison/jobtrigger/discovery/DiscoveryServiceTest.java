@@ -11,12 +11,12 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -25,14 +25,14 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static de.otto.edison.registry.api.Link.link;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DiscoveryServiceTest {
 
     public static final String ENV_NAME = "someEnv";
@@ -52,7 +52,7 @@ public class DiscoveryServiceTest {
 
     private BasicAuthHeaderProvider basicAuthHeaderProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         reset(httpClient, serviceRegistry);
         basicAuthHeaderProvider = new BasicAuthHeaderProvider(basicAuthCredentials);
@@ -85,7 +85,7 @@ public class DiscoveryServiceTest {
         assertThat(jd.getTriggerUrl(), is(DEFAULT_TRIGGER_URL));
     }
 
-    @Ignore("Ignored until Validation is implemented")
+    @Disabled("Ignored until Validation is implemented")
     @Test
     public void shouldValidateResponseBody() throws IOException, ExecutionException, InterruptedException {
         final RegisteredService service = someService();
@@ -182,7 +182,7 @@ public class DiscoveryServiceTest {
     }
 
     @Test
-    @Ignore("Ignored until bug is fixed")
+    @Disabled("Ignored until bug is fixed")
     public void shouldIgnoreNullValuesInJobDefinitionsList() throws Exception {
         final JobDefinitionRepresentation jobDefinitionRepresentation = someJobDefinitionRepresentation();
         jobDefinitionRepresentation.setLinks(ImmutableList.of());

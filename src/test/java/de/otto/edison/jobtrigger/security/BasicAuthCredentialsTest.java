@@ -1,11 +1,11 @@
 package de.otto.edison.jobtrigger.security;
 
 import de.otto.edison.jobtrigger.configuration.JobTriggerProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.support.VaultResponse;
 
@@ -13,11 +13,11 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BasicAuthCredentialsTest {
 
     @Mock
@@ -29,7 +29,7 @@ public class BasicAuthCredentialsTest {
     @Mock
     private VaultOperations vaultOperations;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         when(security.getBasicAuthUser()).thenReturn("someUser");
         when(jobTriggerProperties.getSecurity()).thenReturn(security);

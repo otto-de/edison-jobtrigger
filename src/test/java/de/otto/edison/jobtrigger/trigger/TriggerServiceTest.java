@@ -9,13 +9,13 @@ import de.otto.edison.jobtrigger.discovery.DiscoveryService;
 import de.otto.edison.jobtrigger.security.BasicAuthCredentials;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +31,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TriggerServiceTest {
 
     Logger log = LoggerFactory.getLogger(TriggerService.class);
@@ -59,9 +58,8 @@ public class TriggerServiceTest {
     ArgumentCaptor<List<JobTrigger>> listArgumentCaptor;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         testee = new TriggerService(discoveryService, scheduler, httpClient, new JobTriggerProperties(), basicAuthCredentials, triggerRunnablesService);
         reset(discoveryService, scheduler, httpClient);
         testee.postConstruct();
