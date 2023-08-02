@@ -1,3 +1,6 @@
+## 3.0.0-SNAPSHOT
+* Upgrade to spring boot 3
+
 ## Release 2.3.12
 
 * Do not retry job trigger when Job is already/still running. Edison-jobs is returning 409, when a job is running. 
