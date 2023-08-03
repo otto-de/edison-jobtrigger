@@ -22,7 +22,7 @@ repositories {
 
 group = "de.otto.edison"
 base.archivesName.set("edison-jobtrigger")
-version = "3.0.0-SNAPSHOT"
+version = "3.0.0"
 
 configurations.all {
     exclude(group = "org.slf4j", module = "slf4j-log4j12")

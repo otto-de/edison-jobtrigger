@@ -1,4 +1,4 @@
-## 3.0.0-SNAPSHOT
+## Release 3.0.0
 * Upgrade to spring boot 3
 
 ## Release 2.3.12
