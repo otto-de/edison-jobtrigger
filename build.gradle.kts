@@ -61,7 +61,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("com.github.danielwegener:logback-kafka-appender:0.2.0-RC2")
+    implementation("com.github.danielwegener:logback-kafka-appender:0.2.0-SNAPSHOT")
 
     // spring
     implementation("org.springframework.vault:spring-vault-core:3.0.4")
