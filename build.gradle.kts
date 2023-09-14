@@ -36,7 +36,7 @@ buildscript {
 }
 
 dependencies {
-    val edisonrelease = "3.1.0"
+    val edisonrelease = "3.1.5"
     val awsSdkVersion = "2.20.116"
     val logbackVersion = "1.4.11"
 
