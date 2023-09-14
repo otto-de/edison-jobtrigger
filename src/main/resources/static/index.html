@@ -7,31 +7,29 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Edison JobTrigger</title>
 
-    <!-- Bootstrap -->
-    <link href="webjars/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="webjars/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet"/>
 
     <style>
-        body { padding-top: 70px; }
+        body {
+            padding-top: 70px;
+        }
     </style>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
-<!-- Fixed navbar -->
-<nav class="navbar navbar-fixed-top navbar-dark bg-dark">
+<nav class="navbar navbar-fixed-top bg-dark d-block" data-bs-theme="dark">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="#">Edison JobTrigger</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
+    </div>
+    <div class="collapse bg-dark" id="navbarToggleExternalContent">
+        <div class="container">
             <ul class="nav navbar-nav mr-auto ml-1">
                 <li class="nav-item active">
                     <a class="nav-link" href="#">Home</a>
@@ -46,14 +44,13 @@
                     <a class="nav-link" href="internal">Admin</a>
                 </li>
             </ul>
-        </div><!--/.nav-collapse -->
+        </div>
     </div>
 </nav>
 
 <div class="container">
 
-    <!-- Main component for a primary marketing message or call to action -->
-    <div class="jumbotron">
+    <div class="p-5 my-4 bg-body-tertiary rounded-3">
         <p>
             JobTrigger is a <a href="http://github.com/otto-de/edison-microservice">Edison Microservice</a>. It's
             purpose is to discover other Microservices that provide job definitions (just like edison microservices do),
@@ -65,16 +62,18 @@
             run the job.
         </p>
         <p>
-            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-jobtrigger" role="button">Learn more about JobTrigger &raquo;</a>
-            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-microservice" role="button">Learn more about Edison Microservices &raquo;</a>
+            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-jobtrigger" role="button">Learn
+                more about JobTrigger &raquo;</a>
+            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-microservice" role="button">Learn
+                more about Edison Microservices &raquo;</a>
         </p>
     </div>
 
-</div> <!-- /container -->
+</div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="webjars/jquery/3.6.3/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="webjars/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+<script src="webjars/bootstrap/5.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

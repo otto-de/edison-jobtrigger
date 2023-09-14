@@ -7,22 +7,14 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Edison JobTrigger - Triggers</title>
 
-    <!-- Bootstrap -->
-    <link href="webjars/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="webjars/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet" />
 
     <style>
         body { padding-top: 70px; }
     </style>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
-<!-- Fixed navbar -->
 <nav class="navbar navbar-fixed-top navbar-dark bg-dark">
     <div class="container">
         <div class="navbar-header">
@@ -46,13 +38,13 @@
                     <a class="nav-link" href="internal">Admin</a>
                 </li>
             </ul>
-        </div><!--/.nav-collapse -->
+        </div>
     </div>
 </nav>
 
 <div class="container">
 
-    <div class="jumbotron">
+    <div class="p-5 my-4 bg-body-tertiary rounded-3">
 
         <div th:if="${isStarted == true}">
             <form action="triggers/stop" method="post">
@@ -65,14 +57,14 @@
             </form>
         </div>
     </div>
-    <div class="jumbotron">
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <p>
             Last Triggered Jobs:
         </p>
         <div class="panel panel-danger" th:if="!${#lists.isEmpty(failed)}">
             <div class="panel-heading">Last failed triggers</div>
             <div class="panel-body">
-            </div>            <!-- Table -->
+            </div>
             <div class="table-responsive">
             <table class="table table-hover table-condensed">
                 <tr>
@@ -93,7 +85,7 @@
         <div class="panel panel-primary">
             <div class="panel-heading">Last triggers</div>
             <div class="panel-body">
-            </div>            <!-- Responsice Table -->
+            </div>
             <div class="table-responsive">
             <table class="table table-hover table-condensed">
                 <tr>
@@ -130,7 +122,6 @@
             </table>
             </div>
 
-            <!-- Modal -->
             <div class="modal" id="modalMessages" tabindex="-1" role="dialog" aria-labelledby="Job Messages" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -146,23 +137,20 @@
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </div>
-                    <!-- /.modal-content -->
                 </div>
-                <!-- /.modal-dialog -->
             </div>
-            <!-- /.modal -->
 
         </div>
 
 
     </div>
 
-</div> <!-- /container -->
+</div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="webjars/jquery/3.6.3/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="webjars/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+<script src="webjars/bootstrap/5.3.1/js/bootstrap.min.js"></script>
 <script>
     $('#modalMessages').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
