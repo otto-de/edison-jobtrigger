@@ -1,59 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Edison JobTrigger</title>
 
-    <!-- Bootstrap -->
-    <link href="webjars/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="webjars/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet"/>
 
     <style>
-        body { padding-top: 70px; }
+        body {
+            padding-top: 70px;
+        }
     </style>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
-<!-- Fixed navbar -->
-<nav class="navbar navbar-fixed-top navbar-dark bg-dark">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand" href="#">Edison JobTrigger</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav mr-auto ml-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Home</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Discover</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="triggers">Triggers</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="internal">Admin</a>
-                </li>
-            </ul>
-        </div><!--/.nav-collapse -->
-    </div>
-</nav>
+
+<div th:replace="~{../fragments/navbar  :: navbar}"/>
 
 <div class="container">
 
-    <!-- Main component for a primary marketing message or call to action -->
-    <div class="jumbotron">
+    <div class="p-5 my-4 bg-body-tertiary rounded-3">
         <p>
             Discover new job definitions:
         </p>
@@ -62,14 +31,12 @@
         </form>
 
     </div>
-    <div class="jumbotron" th:each="env : ${environments}">
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3" th:each="env : ${environments}">
         <p>
-            Services registered in <span th:text="${env.name}" />:
+            Services registered in <span th:text="${env.name}"/>:
         </p>
         <div class="panel panel-default" th:each="service : ${env.services}">
-            <!-- Default panel contents -->
-            <div class="panel-heading">JobDefinitions from <span th:text="${service.name}" /></div>
-            <!-- Table -->
+            <div class="panel-heading">JobDefinitions from <span th:text="${service.name}"/></div>
             <table class="table">
                 <tr>
                     <th>Job Type</th>
@@ -85,11 +52,11 @@
         </div>
     </div>
 
-</div> <!-- /container -->
+</div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="webjars/jquery/3.6.3/jquery.min.js"></script>
+<script src="webjars/jquery/3.7.1/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="webjars/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+<script src="webjars/bootstrap/5.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
