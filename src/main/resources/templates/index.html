@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Edison JobTrigger</title>
+
+    <link href="webjars/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div th:replace="~{../fragments/navbar  :: navbar}"/>
+
+<div class="container">
+
+    <div class="p-5 my-4 bg-body-tertiary rounded-3">
+        <p>
+            JobTrigger is a <a href="http://github.com/otto-de/edison-microservice">Edison Microservice</a>. It's
+            purpose is to discover other Microservices that provide job definitions (just like edison microservices do),
+            and to trigger these jobs according to this definition.
+        </p>
+        <p>
+            Jobs are used to regularly execute background tasks like importing data from other
+            systems. Using a JobTrigger, only one instance of a possibly load-balanced cluster of microservices will
+            run the job.
+        </p>
+        <p>
+            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-jobtrigger" role="button">Learn
+                more about JobTrigger &raquo;</a>
+            <a class="btn btn-lg btn-primary" href="http://github.com/otto-de/edison-microservice" role="button">Learn
+                more about Edison Microservices &raquo;</a>
+        </p>
+    </div>
+
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="webjars/jquery/3.7.1/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="webjars/bootstrap/5.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
