@@ -1,3 +1,6 @@
+## Release 3.0.1
+* Upgrade to bootstrap 5.3
+
 ## Release 3.0.0
 * Upgrade to spring boot 3
 
