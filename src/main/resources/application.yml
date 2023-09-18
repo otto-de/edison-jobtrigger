@@ -5,7 +5,8 @@ spring:
         serialization:
             INDENT_OUTPUT: true
 server:
-    context-path: /jobtrigger
+    servlet:
+        context-path: /jobtrigger
     port: 8080
 edison:
     gracefulshutdown:
