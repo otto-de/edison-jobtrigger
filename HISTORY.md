@@ -1,3 +1,6 @@
+## Release 3.0.2
+* Fix broken link to home page after extracting navigation bar to Thymeleaf fragment in v3.0.1
+
 ## Release 3.0.1
 * Upgrade to bootstrap 5.3
 
