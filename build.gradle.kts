@@ -37,16 +37,10 @@ buildscript {
 
 dependencies {
     val edisonrelease = "3.1.5"
-    val awsSdkVersion = "2.20.155"
     val logbackVersion = "1.4.11"
 
     // edison
     implementation("de.otto.edison:edison-core:${edisonrelease}")
-
-    // aws
-    implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
-    implementation("software.amazon.awssdk:secretsmanager:${awsSdkVersion}")
-    implementation("software.amazon.awssdk:ssm:${awsSdkVersion}")
 
     // bootstrap
     //Don't forget to also update the links in the html templates if you change this!
@@ -60,8 +54,6 @@ dependencies {
     // logging
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("com.github.danielwegener:logback-kafka-appender:0.2.0-RC2")
 
     // spring
     implementation("org.springframework.vault:spring-vault-core:3.0.4")
