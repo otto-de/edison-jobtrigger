@@ -56,7 +56,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
 
     // spring
-    implementation("org.springframework.vault:spring-vault-core:3.0.4")
+    implementation("org.springframework.vault:spring-vault-core:3.1.0")
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
