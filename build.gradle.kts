@@ -45,7 +45,7 @@ dependencies {
     // bootstrap
     //Don't forget to also update the links in the html templates if you change this!
     implementation("org.webjars:jquery:3.7.1")
-    implementation("org.webjars:bootstrap:5.3.2")
+    implementation("org.webjars:bootstrap:5.3.3")
     //Don't forget to also update the links in the html templates if you change this!
 
     // guava
