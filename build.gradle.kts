@@ -77,7 +77,7 @@ dependencies {
     testImplementation("de.otto.edison:edison-testsupport:${edisonrelease}")
 
     // workaround to make spring boot test work, which depends on jakarta 6
-    testImplementation("org.eclipse.jetty:jetty-server:11.0.15")
+    testImplementation("org.eclipse.jetty:jetty-server:11.0.21")
     testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 }
 
