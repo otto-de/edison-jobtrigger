@@ -7,7 +7,7 @@ plugins {
     id("java")
     id("project-report")
 
-    id("org.springframework.boot") version "3.1.4"
+    id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.3"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
