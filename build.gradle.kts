@@ -49,7 +49,7 @@ dependencies {
     //Don't forget to also update the links in the html templates if you change this!
 
     // guava
-    implementation("com.google.guava:guava:32.1.2-jre")
+    implementation("com.google.guava:guava:33.3.1-jre")
 
     // logging
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
