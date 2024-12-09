@@ -1,6 +1,8 @@
 [Edison Microservice](https://github.com/otto-de/edison-microservice) is a library to write 
 production-ready Microservices on top of Spring Boot. It is actively used at [otto.de](https://www.otto.de).
 
+![OSS Lifecycle](https://img.shields.io/osslifecycle?file_url=https%3A%2F%2Fraw.githubusercontent.com%2Fotto-de%2Fedison-jobtrigger%2Fmain%2FOSSMETADATA)
+
 Because Microservices should be loosly coupled, they often need to import data from other systems - at least 
 in our architecture. To make such kind of background jobs as easy to implement as possible, and to run them 
 on a regular base in clustered environments, we need a component that is triggering these jobs as needed:
