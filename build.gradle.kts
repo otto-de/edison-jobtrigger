@@ -67,7 +67,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     // asyncHttp
-    implementation("org.asynchttpclient:async-http-client:2.12.3")
+    implementation("org.asynchttpclient:async-http-client:3.0.1")
 
     // test
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
