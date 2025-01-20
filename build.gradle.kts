@@ -78,7 +78,7 @@ dependencies {
 
     // workaround to make spring boot test work, which depends on jakarta 6
     testImplementation("org.eclipse.jetty:jetty-server:11.0.15")
-    testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
+    testImplementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
 }
 
 tasks {
