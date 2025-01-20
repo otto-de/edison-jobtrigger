@@ -71,7 +71,7 @@ dependencies {
 
     // test
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito:mockito-core:5.15.2")
     testImplementation("org.hamcrest:java-hamcrest:2.0.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("de.otto.edison:edison-testsupport:${edisonrelease}")
