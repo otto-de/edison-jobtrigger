@@ -57,7 +57,7 @@ dependencies {
 
     // spring
     implementation("org.springframework.vault:spring-vault-core:3.0.4")
-    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.2.Final")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     // jetty
