@@ -31,7 +31,7 @@ configurations.all {
 }
 
 dependencies {
-    val edisonrelease = "3.4.1"
+    val edisonrelease = "3.4.2"
     val logbackVersion = "1.5.16"
 
     // edison
