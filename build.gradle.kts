@@ -7,10 +7,10 @@ plugins {
     id("java")
     id("project-report")
 
-    id("org.springframework.boot") version "3.1.4"
-    id("io.spring.dependency-management") version "1.1.3"
-    id("com.github.ben-manes.versions") version "0.48.0"
-    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+    id("org.springframework.boot") version "3.4.2"
+    id("io.spring.dependency-management") version "1.1.7"
+    id("com.github.ben-manes.versions") version "0.52.0"
+    id("com.gorylenko.gradle-git-properties") version "2.4.2"
 }
 
 repositories {
@@ -22,7 +22,7 @@ repositories {
 
 group = "de.otto.edison"
 base.archivesName.set("edison-jobtrigger")
-version = "3.0.3-SNAPSHOT"
+version = "3.0.3"
 
 configurations.all {
     exclude(group = "org.slf4j", module = "slf4j-log4j12")
@@ -30,14 +30,9 @@ configurations.all {
     exclude(module = "spring-boot-starter-tomcat")
 }
 
-buildscript {
-    // jetty 11 does not yet support jakarta 6
-    extra["jakarta-servlet.version"] = "5.0.0"
-}
-
 dependencies {
-    val edisonrelease = "3.1.5"
-    val logbackVersion = "1.4.11"
+    val edisonrelease = "3.4.2"
+    val logbackVersion = "1.5.16"
 
     // edison
     implementation("de.otto.edison:edison-core:${edisonrelease}")
@@ -45,11 +40,11 @@ dependencies {
     // bootstrap
     //Don't forget to also update the links in the html templates if you change this!
     implementation("org.webjars:jquery:3.7.1")
-    implementation("org.webjars:bootstrap:5.3.2")
+    implementation("org.webjars:bootstrap:5.3.3")
     //Don't forget to also update the links in the html templates if you change this!
 
     // guava
-    implementation("com.google.guava:guava:32.1.2-jre")
+    implementation("com.google.guava:guava:33.4.0-jre")
 
     // logging
     implementation("ch.qos.logback:logback-core:${logbackVersion}")
@@ -57,28 +52,28 @@ dependencies {
 
     // spring
     implementation("org.springframework.vault:spring-vault-core:3.1.2")
-    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.2.Final")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-web")
 
     // jetty
     implementation("org.springframework.boot:spring-boot-starter-jetty")
 
     // gson
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // asyncHttp
-    implementation("org.asynchttpclient:async-http-client:2.12.3")
+    implementation("org.asynchttpclient:async-http-client:3.0.1")
 
     // test
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("org.mockito:mockito-core:5.15.2")
     testImplementation("org.hamcrest:java-hamcrest:2.0.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("de.otto.edison:edison-testsupport:${edisonrelease}")
 
-    // workaround to make spring boot test work, which depends on jakarta 6
-    testImplementation("org.eclipse.jetty:jetty-server:11.0.15")
-    testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
+    testImplementation("org.eclipse.jetty:jetty-server:12.0.16")
+    testImplementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
 }
 
 tasks {

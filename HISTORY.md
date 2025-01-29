@@ -1,3 +1,6 @@
+## Release 3.0.3
+* Update to Spring Boot 3.4.2 and gradle 8.12.1 and other dependencies accordingly
+
 ## Release 3.0.2
 * Fix broken link to home page after extracting navigation bar to Thymeleaf fragment in v3.0.1
 
