@@ -32,7 +32,7 @@ configurations.all {
 
 dependencies {
     val edisonrelease = "3.4.2"
-    val logbackVersion = "1.5.16"
+    val logbackVersion = "1.5.32"
 
     // edison
     implementation("de.otto.edison:edison-core:${edisonrelease}")
