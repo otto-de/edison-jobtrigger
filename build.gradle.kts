@@ -60,7 +60,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jetty")
 
     // gson
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.12.0")
 
     // asyncHttp
     implementation("org.asynchttpclient:async-http-client:3.0.1")
